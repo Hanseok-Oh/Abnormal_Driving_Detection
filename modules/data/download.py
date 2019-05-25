@@ -19,16 +19,6 @@ import re
 import pytz
 from datetime import datetime
 
-# argparse
-import argparse
-parser = argparse.ArgumentParser()
-parser.add_argument('--path', type=str, help='다운로드 경로')
-parser.add_argument('--download_number', type=int, help='다운로드 파일 개수')
-
-args = parser.parse_args()
-path = args.path
-num = args.download_number
-
 
 class Download():
     def __init__(self, path, road='ex'):
@@ -93,7 +83,3 @@ class Download():
             self.random_cctv()
             self.download_cctv()
         print('다운로드 완료')
-
-
-d = Download(path=path)
-d.make_dataset(num=num)
