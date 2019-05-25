@@ -21,8 +21,9 @@ from datetime import datetime
 
 
 class Download():
-    def __init__(self, path, road='ex'):
+    def __init__(self, path, num, road='ex'):
         self.path = path # data 저장 path
+        self.num = num # 다운로드 파일 수
 
         auth = '1554523699265'
         ex_url = 'http://openapi.its.go.kr:8081/api/NCCTVInfo?key={}&ReqType=2&MinX=124&MaxX=132&MinY=33&MaxY=43&type=ex'.format(auth) # 고속도로 url
@@ -76,9 +77,9 @@ class Download():
         urllib.request.urlretrieve(self.cctv_url, self.path + self.now + self.cctv_name + '.mp4')
 
     # Dataset 만들기
-    def make_dataset(self, num):
+    def make_dataset(self):
         self.request_api()
-        for _ in range(num):
+        for _ in range(self.num):
             self.set_timezone()
             self.random_cctv()
             self.download_cctv()
