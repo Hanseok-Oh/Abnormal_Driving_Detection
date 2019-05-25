@@ -4,6 +4,10 @@ import cv2
 import torch
 import numpy as np
 
+from torch.utils.data import Dataset
+from torch.utils.data import DataLoader
+
+
 # Load class
 class Load():
     def __init__(self, path, type='total'):
@@ -52,7 +56,7 @@ class Load():
             else:
                 dataset = np.concatenate((dataset, self.current_video_frame))
         self.dataset = dataset
-        print('데이터로드 완료')
+        print('로드 완료')
 
     # 데이터 전처리
     def convert_frame(self):
@@ -65,3 +69,15 @@ class Load():
         # tensor type
         tensor_frame = torch.from_numpy(temp_frame).float().to(self.device) # tensor로 변환
         self.tensor_frame = tensor_frame.permute(0, 3, 1, 2) # pytorch img 순서로 변환
+
+
+class CustomDataset(Dataset):
+    def __init__(self, data):
+        self.x_data = data
+
+    def __len__(self):
+        return len(self.x_data)
+
+    def __getitem__(self, idx):
+        x = torch.FloatTensor(self.x_data[idx])
+        return x
