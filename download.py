@@ -1,7 +1,3 @@
-'''
-CCTV 영상 다운로드
-'''
-
 # API requests
 import requests
 import urllib.request
@@ -19,11 +15,19 @@ import re
 import pytz
 from datetime import datetime
 
+#argparse
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--path", help='다운로드 경로', type=str, nargs='?', const='C:/Users/Yoon/Desktop/프로젝트/이상운전/data/frame/')
+parser.add_argument("--num", help='다운로드 파일 수', type=int, nargs='?', const='128')
+
+args = parser.parse_args()
 
 class Download():
     def __init__(self, path, num, road='ex'):
-        self.path = path # data 저장 path
-        self.num = num # 다운로드 파일 수
+        self.path = args.path # data 저장 path
+        self.num = args.num # 다운로드 파일 수
 
         auth = '1554523699265'
         ex_url = 'http://openapi.its.go.kr:8081/api/NCCTVInfo?key={}&ReqType=2&MinX=124&MaxX=132&MinY=33&MaxY=43&type=ex'.format(auth) # 고속도로 url
@@ -84,3 +88,7 @@ class Download():
             self.random_cctv()
             self.download_cctv()
         print('다운로드 완료')
+
+if __name__ == '__main__':
+    d = Download(path=path, num=num)
+    d.make_dataset()

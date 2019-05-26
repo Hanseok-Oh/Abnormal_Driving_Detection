@@ -3,16 +3,27 @@ import os
 import cv2
 import torch
 import numpy as np
+import pandas as pd
 
 from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
 
+#argparse
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--video_path", help='비디오 경로', type=str, nargs='?', const='C:/Users/Yoon/Desktop/프로젝트/이상운전/data/frame/')
+parser.add_argument("--array_path", help='array 경로', type=str, nargs='?', const='C:/Users/Yoon/Desktop/프로젝트/이상운전/data/array/')
+
+args = parser.parse_args()
+video_path = args.video_path
+array_path = args.array_path
 
 # Load class
 class Load():
-    def __init__(self, path, type='total'):
-        self.path = path # dataset path
-        self.videos = os.listdir(self.path) # video list
+    def __init__(self, type='total'):
+        self.video_path = args.video_path # dataset path
+        self.videos = os.listdir(self.video_path) # video list
         self.type = type # 전체영상 or 특정영상 (total or specific)
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu") # gpu
 
@@ -24,7 +35,7 @@ class Load():
     def cap_video(self, num):
         # video 불러오기
         self.current_video = self.videos[num] # 현재 처리 video
-        current_video_path = self.path + self.current_video
+        current_video_path = self.video_path + self.current_video
         cap = cv2.VideoCapture(current_video_path)
 
         # video 정보
@@ -47,7 +58,7 @@ class Load():
         cv2.destroyAllWindows()
         self.current_video_frame = np.array(current_video_frame, dtype=np.float32) # 현재 처리 video frame
 
-    # 데이터셋 laod
+    # load dataset
     def load_dataset(self):
         for i in range(len(self.videos)):
             self.cap_video(i)
@@ -56,28 +67,16 @@ class Load():
             else:
                 dataset = np.concatenate((dataset, self.current_video_frame))
         self.dataset = dataset
-        print('로드 완료')
 
-    # 데이터 전처리
-    def convert_frame(self):
+        self.datainfo = pd.DataFrame({'filename':self.videos})
 
-        temp_frame = self.current_video_frame
-        temp_frame /= 255.0
+    # save dataset
+    def save_dataset(self):
+        np.save(args.array_path + 'ex.npy', self.dataset)
+        self.datainfo.to_csv(args.array_path + 'ex.csv', encoding='utf-8')
 
-        self.array_frame = temp_frame # array type
-
-        # tensor type
-        tensor_frame = torch.from_numpy(temp_frame).float().to(self.device) # tensor로 변환
-        self.tensor_frame = tensor_frame.permute(0, 3, 1, 2) # pytorch img 순서로 변환
-
-
-class CustomDataset(Dataset):
-    def __init__(self, data):
-        self.x_data = data
-
-    def __len__(self):
-        return len(self.x_data)
-
-    def __getitem__(self, idx):
-        x = torch.FloatTensor(self.x_data[idx])
-        return x
+if __name__ == '__main__':
+    l = Load()
+    l.load_dataset()
+    l.save_dataset()
+    print('변환 완료')
