@@ -12,8 +12,9 @@ from torch.utils.data import DataLoader
 import argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--video_path", help='비디오 경로', type=str, nargs='?', const='C:/Users/Yoon/Desktop/프로젝트/이상운전/data/frame/')
-parser.add_argument("--array_path", help='array 경로', type=str, nargs='?', const='C:/Users/Yoon/Desktop/프로젝트/이상운전/data/array/')
+parser.add_argument("--video_path", help='비디오 경로', type=str, nargs='?', default='C:/Users/Yoon/Desktop/프로젝트/이상운전/data/frame/')
+parser.add_argument("--array_path", help='array 경로', type=str, nargs='?', default='C:/Users/Yoon/Desktop/프로젝트/이상운전/data/array/')
+parser.add_argument("--dataset_num", help='dataset order', type=str)
 
 args = parser.parse_args()
 video_path = args.video_path
@@ -72,8 +73,10 @@ class Load():
 
     # save dataset
     def save_dataset(self):
-        np.save(args.array_path + 'ex.npy', self.dataset)
-        self.datainfo.to_csv(args.array_path + 'ex.csv', encoding='utf-8')
+        data_name = 'dataset_{}.npy'.format(args.dataset_num)
+        data_info_name = 'datainfo_{}.csv'.format(args.dataset_num)
+        np.save(args.array_path + name, self.dataset)
+        self.datainfo.to_csv(args.array_path + data_info_name, encoding='utf-8')
 
 if __name__ == '__main__':
     l = Load()

@@ -19,13 +19,12 @@ from datetime import datetime
 import argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--path", help='다운로드 경로', type=str, nargs='?', const='C:/Users/Yoon/Desktop/프로젝트/이상운전/data/frame/')
-parser.add_argument("--num", help='다운로드 파일 수', type=int, nargs='?', const='128')
-
+parser.add_argument("--path", help='다운로드 경로', type=str, nargs='?', default='C:/Users/Yoon/Desktop/프로젝트/이상운전/data/frame/')
+parser.add_argument("--num", help='다운로드 파일 수', type=int, nargs='?', default='128')
 args = parser.parse_args()
 
 class Download():
-    def __init__(self, path, num, road='ex'):
+    def __init__(self, road='ex'):
         self.path = args.path # data 저장 path
         self.num = args.num # 다운로드 파일 수
 
@@ -90,5 +89,5 @@ class Download():
         print('다운로드 완료')
 
 if __name__ == '__main__':
-    d = Download(path=path, num=num)
+    d = Download()
     d.make_dataset()
