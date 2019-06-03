@@ -20,7 +20,7 @@ load_path = args.load_path
 save_path = args.save_path
 dataset_name = args.dataset_name
 
-# Load class
+# Convert class
 class Convert():
     def __init__(self, load_path=load_path, save_path=save_path, dataset_name=dataset_name):
         self.load_path = load_path
@@ -59,7 +59,7 @@ class Convert():
         cv2.destroyAllWindows()
         self.current_video_frame = np.array(current_video_frame, dtype=np.float32) # 현재 처리 video frame
 
-    # 영상 불러오기2
+    # 영상 불러오기 2
     def cap_video_2(self, num):
         current_video = self.videos[num] # 현재 처리 video
         current_video_path = self.load_path + current_video
@@ -68,8 +68,8 @@ class Convert():
     # convert dataset
     def convert_dataset(self):
         for i in range(len(self.videos)):
-            #self.cap_video(i)
-            self.cap_video_2(i)
+            self.cap_video(i)
+            #self.cap_video_2(i)
             if i == 0:
                 dataset = self.current_video_frame
             else:
