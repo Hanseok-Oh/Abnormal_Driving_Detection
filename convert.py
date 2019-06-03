@@ -67,6 +67,7 @@ class Load():
                 dataset = self.current_video_frame
             else:
                 dataset = np.concatenate((dataset, self.current_video_frame))
+            print("{}% 진행".format(str(((i+1) / len(self.videos) * 100))))
         self.dataset = dataset
 
         self.datainfo = pd.DataFrame({'filename':self.videos})
@@ -75,7 +76,7 @@ class Load():
     def save_dataset(self):
         data_name = 'dataset_{}.npy'.format(args.dataset_num)
         data_info_name = 'datainfo_{}.csv'.format(args.dataset_num)
-        np.save(args.array_path + name, self.dataset)
+        np.save(args.array_path + data_name, self.dataset)
         self.datainfo.to_csv(args.array_path + data_info_name, encoding='utf-8')
 
 if __name__ == '__main__':
