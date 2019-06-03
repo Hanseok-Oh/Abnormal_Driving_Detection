@@ -6,27 +6,31 @@ from bs4 import BeautifulSoup
 # data
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
 
 # etc
 import os
 import time
 import re
 import pytz
+import time
 from datetime import datetime
 
 #argparse
 import argparse
-
 parser = argparse.ArgumentParser()
 parser.add_argument("--path", help='다운로드 경로', type=str, nargs='?', default='C:/Users/Yoon/Desktop/프로젝트/이상운전/data/frame/')
-parser.add_argument("--num", help='다운로드 파일 수', type=int, nargs='?', default='128')
+parser.add_argument("--num", help='다운로드 개수', type=int, nargs='?', default=105)
+parser.add_argument("--road", help='ex(고속도로) / its(국도)', type=str, nargs='?', default='ex')
+
 args = parser.parse_args()
+path = args.path
+num  = args.num
+road = args.road
 
 class Download():
-    def __init__(self, road='ex'):
-        self.path = args.path # data 저장 path
-        self.num = args.num # 다운로드 파일 수
+    def __init__(self, path=path, num=num, road=road):
+        self.path = path # data 저장 path
+        self.num = num # random 다운로드 파일 수
 
         auth = '1554523699265'
         ex_url = 'http://openapi.its.go.kr:8081/api/NCCTVInfo?key={}&ReqType=2&MinX=124&MaxX=132&MinY=33&MaxY=43&type=ex'.format(auth) # 고속도로 url
@@ -57,7 +61,7 @@ class Download():
         now = pytz.utc.localize(now).astimezone(seoul_tz)
         self.now = now.strftime("%Y%m%d_%H%M_")
 
-    # Random하게 CCTV 선택하기
+    # random하게 cctv 선택
     def random_cctv(self):
         random_idx = np.random.choice(len(self.cctv_df))
         name = self.cctv_df.loc[random_idx, 'name']
@@ -79,7 +83,7 @@ class Download():
             os.mkdir(self.path)
         urllib.request.urlretrieve(self.cctv_url, self.path + self.now + self.cctv_name + '.mp4')
 
-    # Dataset 만들기
+    # dataset 만들기
     def make_dataset(self):
         self.request_api()
         for _ in range(self.num):
@@ -88,6 +92,7 @@ class Download():
             self.download_cctv()
         print('다운로드 완료')
 
+# 실행
 if __name__ == '__main__':
     d = Download()
     d.make_dataset()
