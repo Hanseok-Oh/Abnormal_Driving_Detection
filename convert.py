@@ -11,9 +11,9 @@ import skvideo.io
 import argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--load_path", help='load path', type=str, nargs='?', default='C:/Users/Yoon/Desktop/프로젝트/이상운전/data/frame/')
-parser.add_argument("--save_path", help='save path', type=str, nargs='?', default='C:/Users/Yoon/Desktop/프로젝트/이상운전/data/array/')
-parser.add_argument("--dataset_name", help='dataset name', type=str, nargs='?', default='cctv')
+parser.add_argument("--load_path", help='load path', type=str)
+parser.add_argument("--save_path", help='save path', type=str)
+parser.add_argument('--dataset_name', help='dataset name', type=str)
 
 args = parser.parse_args()
 load_path = args.load_path
@@ -26,7 +26,6 @@ class Convert():
         self.load_path = load_path
         self.save_path = save_path
         self.dataset_name = dataset_name
-
         self.videos = os.listdir(self.load_path) # video list
 
         # video size
