@@ -41,6 +41,7 @@ dataloader = DataLoader(
 
 # model
 auto_encoder = autoencoder.AutoEncoder()
+auto_encoder.to(device)
 #print(summary(auto_encoder, (3, 240,320)))
 
 # train
