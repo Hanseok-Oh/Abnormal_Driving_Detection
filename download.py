@@ -18,12 +18,12 @@ from datetime import datetime
 #argparse
 import argparse
 parser = argparse.ArgumentParser()
-parser.add_argument("--path", help='다운로드 경로', type=str, nargs='?', default='C:/Users/Yoon/Desktop/프로젝트/이상운전/data/frame/')
+parser.add_argument("--download_path", help='다운로드 경로', type=str, nargs='?', default='C:/Users/Yoon/Desktop/프로젝트/이상운전/data/frame/')
 parser.add_argument("--num", help='다운로드 개수', type=int, nargs='?', default=105)
 parser.add_argument("--road", help='ex(고속도로) / its(국도)', type=str, nargs='?', default='ex')
 
 args = parser.parse_args()
-path = args.path
+path = args.download_path
 num  = args.num
 road = args.road
 
