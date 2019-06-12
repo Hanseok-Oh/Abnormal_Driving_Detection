@@ -53,7 +53,7 @@ def train(args):
 
     generative_model = autoencoder.AutoEncoder()
     generative_model = generative_model.to(device)
-    print(summary(generative_model), (3,240,320))
+    print(summary(generative_model, (3,240,320)))
 
     criterion = nn.MSELoss().to(device) # loss function
     optimizer = optim.Adam(model.parameters(), lr=1e-3) # adam optimizer
