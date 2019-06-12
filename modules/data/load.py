@@ -66,8 +66,8 @@ class CustomDataset(Dataset):
 
     def __getitem__(self, idx):
         if self.transform:
-            x = self.transform(x)
-            y = self.transform(y)
+            x = self.transform(self.x_data[idx])
+            y = self.transform(self.y_data[idx])
         else:
             x = torch.FloatTensor(self.x_data[idx])
             y = torch.FloatTensor(self.y_data[idx])
