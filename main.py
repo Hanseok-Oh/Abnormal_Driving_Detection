@@ -1,6 +1,7 @@
 # Modules
 import argparse
 import numpy as np
+import matplotlib.pyplot as plt
 from datetime import datetime
 
 # Pytorch
@@ -22,12 +23,17 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--video_path", help='비디오 저장 폴더', type=str)
     parser.add_argument("--weight_path", help='모델 weight 저장할 폴더', type=str, default='temp')
+    parser.add_argument('--TNT', help='Train or Test', type=str, default='train')
     parser.add_argument("--offset", help='X, Y frame 차이', type=int, default=10)
     parser.add_argument("--batch_size", help='Batch size', type=int, default=32)
     parser.add_argument("--step_size", help='학습시킬 비디오 개수', type=int, default=16)
 
     args = parser.parse_args()
-    train(args)
+
+    if args.TNT == 'train':
+        train(args)
+    else:
+        test(args)
 
 # GPU 사용 확인
 def check_device():
@@ -74,7 +80,7 @@ def train(args):
             optimizer.zero_grad()
             outputs = generative_model(x)
 
-            loss = criterion(outputs, x)
+            loss = criterion(outputs, y)
             loss.backward()
             optimizer.step()
 
@@ -84,8 +90,16 @@ def train(args):
         step_time = datetime.now() - start_time
         step_loss /= step_total
 
-        print("step:{} / loss:{} / time:{}".format(st, step_loss, step_time))
+        if st % 10 == 0:
+            print("step:{} / loss:{} / time:{}".format(st, step_loss, step_time))
+            print(outputs[0].shape)
+            generated_img = outputs[0].transpose(1,2,0).detach().cpu().numpy()
+            plt.imshow(generated_img)
+
     print("학습 완료")
+
+def test(args):
+    print('test')
 
 if __name__ == '__main__':
     main()
