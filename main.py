@@ -38,8 +38,8 @@ def check_device():
 
 def get_dataset_loader(args):
     transform = torchvision.transforms.Compose(
-    [transforms.ToTensor(),
-     transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
+    [torchvision.transforms.ToTensor(),
+     torchvision.transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 
     dataset, dataloader = load_dataset(
         video_path = args.video_path,
