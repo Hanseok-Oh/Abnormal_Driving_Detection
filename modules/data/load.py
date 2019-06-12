@@ -42,6 +42,8 @@ class VideoLoad:
         cv2.destroyAllWindows()
         self.video_frame_numpy = np.array(video_frame)
         self.video_frame_pytorch = np.transpose(self.video_frame_numpy, (0,3,1,2)) # pytorch 순서로 변경
+        print("numpy", self.video_frame_numpy.shape)
+        print('pytorch', self.video_frame_pytorch.shape)
 
 # custom dataset
 class CustomDataset(Dataset):
