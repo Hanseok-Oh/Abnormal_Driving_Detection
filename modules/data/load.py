@@ -7,28 +7,26 @@ import pandas as pd
 import torch
 from torchvision import transforms
 from torch.utils.data import Dataset
+from torch.utils.data import DataLoader
+
 
 class VideoLoad:
-    def __init__(self, load_path):
-        self.load_path = load_path
+    def __init__(self, video_path):
+        self.video_path = video_path
+        self.video_list = os.listdir(self.video_path)
 
     # select video
     def select_video(self, random=True, video_idx=0):
-        videos = os.listdir(self.load_path)
-
+        # index 추출
         if random:
             idx = np.random.choice(3)
         else:
             idx = video_idx
-
-        self.selected_video = os.path.join(self.load_path, videos[idx])
+        self.selected_video = os.path.join(self.video_path, self.video_list[idx]) # video 선택
 
     # video capture
     def cap_video(self):
-        # video 불러오기
-        cap = cv2.VideoCapture(self.selected_video)
-
-        # current video 정보
+        cap = cv2.VideoCapture(self.selected_video) # video 불러오기
         video_frame_num = int(cap.get(cv2.cv2.CAP_PROP_FRAME_COUNT)) # frame 수
 
         # capture
@@ -42,41 +40,47 @@ class VideoLoad:
 
         cap.release()
         cv2.destroyAllWindows()
-
-        temp_video_frame = np.array(video_frame)
-        self.video_frame = np.transpose(temp_video_frame, (0,3,1,2))
+        self.video_frame_numpy = np.array(video_frame)
+        self.video_frame_pytorch = np.transpose(temp_video_frame, (0,3,1,2)) # pytorch 순서로 변경
 
 # custom dataset
 class CustomDataset(Dataset):
-    def __init__(self, data, offset):
+    def __init__(self, data, offset, transform=None):
         self.data = data
-        self.offset = offset
-
-        # split x y
-        self.x_idx = np.arange(len(data) - offset)
-        self.y_idx = np.arange(offset, len(data))
-
-        self.x_data = self.data[self.x_idx]
-        self.y_data = self.data[self.y_idx]
+        self.offset = offset # x,y frame 차이
+        self.transform = transform
 
         # data info
         self.height = 240
         self.width = 320
         self.channel = 3
 
+        # split x y
+        self.x_idx = np.arange(len(data) - offset)
+        self.y_idx = np.arange(offset, len(data))
+        self.x_data = self.data[self.x_idx]
+        self.y_data = self.data[self.y_idx]
+
     def __len__(self):
         return len(self.x_data)
 
     def __getitem__(self, idx):
-        x = torch.FloatTensor(self.x_data[idx])
-        y = torch.FloatTensor(self.y_data[idx])
+        if self.transform:
+            x = self.transform(x)
+            y = self.transform(y)
+        else:
+            x = torch.FloatTensor(self.x_data[idx])
+            y = torch.FloatTensor(self.y_data[idx])
+
         return x, y
 
 # load data
-def get_dataset(video_path, offset):
+def load_dataset(video_path, batch_size, offset, transform):
+    # video capture
     videoloader = VideoLoad(video_path)
     videoloader.select_video()
     videoloader.cap_video()
 
-    frame = videoloader.video_frame
-    return CustomDataset(frame, offset)
+    dataset = CustomDataset(videoloader.video_frame_pytorch, offset, transform)
+    dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
+    return dataset, dataloader
