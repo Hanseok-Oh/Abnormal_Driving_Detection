@@ -92,8 +92,7 @@ def train(args):
 
         if st % 10 == 0:
             print("step:{} / loss:{} / time:{}".format(st, step_loss, step_time))
-            print(outputs[0].shape)
-            generated_img = outputs[0].transpose(1,2,0).detach().cpu().numpy()
+            generated_img = outputs[0].permute(1,2,0).detach().cpu().numpy()
             plt.imshow(generated_img)
 
     print("학습 완료")
