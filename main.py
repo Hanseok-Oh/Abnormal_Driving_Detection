@@ -56,7 +56,7 @@ def train(args):
     print(summary(generative_model, (3,240,320)))
 
     criterion = nn.MSELoss().to(device) # loss function
-    optimizer = optim.Adam(model.parameters(), lr=1e-3) # adam optimizer
+    optimizer = optim.Adam(generative_model.parameters(), lr=1e-3) # adam optimizer
 
     print('학습 시작')
     start_time = datetime.now()
@@ -81,11 +81,11 @@ def train(args):
             step_loss += loss.item()
             step_total += x.size(0)
 
-    step_time = datetime.now() - start_time
-    step_loss /= step_total
+        step_time = datetime.now() - start_time
+        step_loss /= step_total
 
-    print("step:{} / loss:{} / time:{}".format(st, step_loss, step_time))
-print("학습 완료")
+        print("step:{} / loss:{} / time:{}".format(st, step_loss, step_time))
+    print("학습 완료")
 
 if __name__ == '__main__':
     main()
