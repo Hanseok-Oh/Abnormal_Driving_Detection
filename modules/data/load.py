@@ -42,8 +42,7 @@ class VideoLoad:
         cv2.destroyAllWindows()
         self.video_frame_numpy = np.array(video_frame)
         self.video_frame_pytorch = np.transpose(self.video_frame_numpy, (0,3,1,2)) # pytorch 순서로 변경
-        print("numpy", self.video_frame_numpy.shape)
-        print('pytorch', self.video_frame_pytorch.shape)
+
 
 # custom dataset
 class CustomDataset(Dataset):
@@ -83,6 +82,6 @@ def load_dataset(video_path, batch_size, offset, transform):
     videoloader.select_video()
     videoloader.cap_video()
 
-    dataset = CustomDataset(videoloader.video_frame_pytorch, offset, transform)
+    dataset = CustomDataset(videoloader.video_frame_numpy, offset, transform)
     dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
     return dataset, dataloader
