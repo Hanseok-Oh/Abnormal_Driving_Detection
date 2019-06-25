@@ -86,12 +86,13 @@ def Autoencoder_v2(drop_rate=0.5):
 
 
 def Autoencoder_v3(drop_rate=0):
-    input_img = L.Input(shape=(240, 320, 3))
+    # (64, 64, 3)
+    input_img = L.Input(shape=(64,64,3))
 
-    x = L.Conv2D(32, (7, 7), activation='relu', padding='same')(input_img)
+    x = L.Conv2D(32, (3, 3), activation='relu', padding='same')(input_img)
     x = L.Dropout(drop_rate)(x)
-    x = L.AveragePooling2D((5, 5))(x)
-    x = L.Conv2D(64, (5, 5), activation='relu', padding='same')(x)
+    x = L.AveragePooling2D((2, 2))(x)
+    x = L.Conv2D(64, (3, 3), activation='relu', padding='same')(x)
     x = L.Dropout(drop_rate)(x)
     x = L.AveragePooling2D((2, 2))(x)
     x = L.Conv2D(128, (3, 3), activation='relu', padding='same')(x)
@@ -102,11 +103,11 @@ def Autoencoder_v3(drop_rate=0):
     x = L.AveragePooling2D((2, 2))(x)
     encoded = L.Flatten()(x)
 
-    input_latent = L.Input(shape=(6*8*128,))
-    _x = L.Reshape((6,8,128))(input_latent)
+    input_latent = L.Input(shape=(8*8*128,))
+    _x = L.Reshape((8,8,128))(input_latent)
     _x = L.Conv2D(128, (3, 3), activation='relu', padding='same')(_x)
     _x = L.Dropout(drop_rate)(_x)
-    _x = L.UpSampling2D((5, 5))(_x)
+    _x = L.UpSampling2D((2, 2))(_x)
     _x = L.Conv2D(128, (3, 3), activation='relu', padding='same')(_x)
     _x = L.Dropout(drop_rate)(_x)
     _x = L.UpSampling2D((2, 2))(_x)
@@ -121,7 +122,7 @@ def Autoencoder_v3(drop_rate=0):
     encoder = Model(input_img, encoded, name='encoder')
     decoder = Model(input_latent, decoded, name='decoder')
 
-    input_total = L.Input(shape=(240, 320, 3))
+    input_total = L.Input(shape=(64, 64, 3))
     _encoded = encoder(input_total)
     _decoded = decoder(_encoded)
     autoencoder = Model(input_total, _decoded)
