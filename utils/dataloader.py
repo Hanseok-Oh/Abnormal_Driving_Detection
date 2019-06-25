@@ -1,12 +1,14 @@
 import av
 import os
 import cv2
+import tensorflow as tf
 import numpy as np
 
 class Dataloader:
-    def __init__(self, video_directory_path):
+    def __init__(self, video_directory_path, resize=True):
         self.video_directory_path = video_directory_path
         self.video_list = self._get_video_list()
+        self.resize = resize
 
 
     def choose_random_video(self):
@@ -17,6 +19,9 @@ class Dataloader:
             random_video_frame = self._get_video_frame_cv2(random_video)
 
         random_video_frame = random_video_frame.astype('float32') / 255
+
+        if self.resize:
+            random_video_frame = [tf.image.resize(i, (64,64,3)) for i in random_video_frame]
         return random_video_frame
 
 
