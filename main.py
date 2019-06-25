@@ -1,109 +1,60 @@
-# Modules
+# modules
+import keras
 import argparse
 import numpy as np
 import matplotlib.pyplot as plt
-from datetime import datetime
 
-# Pytorch
-import torch
-import torch.nn as nn
-import torch.optim as optim
-import torch.nn.functional as F
-import torchvision
-from torch.utils.data import DataLoader
-from torch.utils.data import Dataset
-from torchsummary import summary
+from utils.dataloader import Dataloader
+from models.autoencoder import Vanilla_Autoencoder
 
-# model
-from modules.data.load import load_dataset
-from modules.models import autoencoder
 
-# 실행 함수
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--video_path", help='비디오 저장 폴더', type=str)
-    parser.add_argument("--weight_path", help='모델 weight 저장할 폴더', type=str, default='temp')
-    parser.add_argument('--TNT', help='Train or Test', type=str, default='train')
-    parser.add_argument("--offset", help='X, Y frame 차이', type=int, default=10)
-    parser.add_argument("--batch_size", help='Batch size', type=int, default=32)
-    parser.add_argument("--step_size", help='학습시킬 비디오 개수', type=int, default=16)
+# argparse
+parser = argparse.ArgumentParser()
+parser.add_argument('--train', help='train or test', type=str, default='train')
+parser.add_argument('--video_path', help='video directory', type=str)
+parser.add_argument('--step', help='video steps', type=int, default=1000)
+parser.add_argument('--batch_size', help='batch_size', type=int, default=32)
+args = parser.parse_args()
 
-    args = parser.parse_args()
+def get_generator(dataloader, batch_size):
+    while True:
+        cctv = dataloader.choose_random_video()
+        for _ in range(int(len(cctv) / batch_size)):
+            random_idx = np.random.randint(0,len(cctv),batch_size)
+            batch = cctv[random_idx]
+            yield (batch, batch)
 
-    if args.TNT == 'train':
-        train(args)
-    else:
-        test(args)
-
-# GPU 사용 확인
-def check_device():
-    # gpu device
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    print("현재 사용 Device : {}".format(device))
-    return device
-
-def get_dataset_loader(args):
-    transform = torchvision.transforms.Compose(
-    [torchvision.transforms.ToTensor(),
-     torchvision.transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
-
-    dataset, dataloader = load_dataset(
-        video_path = args.video_path,
-        batch_size = args.batch_size,
-        offset = args.offset,
-        transform = transform)
-    return dataset, dataloader
 
 def train(args):
-    device = check_device()
-
-    generative_model = autoencoder.AutoEncoder()
-    generative_model = generative_model.to(device)
-    print(summary(generative_model, (3,240,320)))
-
-    criterion = nn.MSELoss().to(device) # loss function
-    optimizer = optim.Adam(generative_model.parameters(), lr=1e-3) # adam optimizer
+    dataloader = Dataloader(args.video_path)
+    #datagen = get_generator(dataloader, args.batch_size)
+    model = Vanilla_Autoencoder()
+    print(model.summary())
 
     print('학습 시작')
-    start_time = datetime.now()
+    for st in range(args.step):
+        cctv = dataloader.choose_random_video()
+        for _ in range(int(len(cctv) / args.batch_size)):
+            random_idx = np.random.randint(0,len(cctv), args.batch_size)
+            batch = cctv[random_idx]
+            history = model.train_on_batch(batch, batch)
 
-    for st in range(args.step_size):
-        dataset, dataloader = get_dataset_loader(args) # load video frame
-        step_loss = 0.0
-        step_total = 0.0
-
-        for idx, data in enumerate(dataloader):
-            x, y = data
-            x = x.to(device)
-            y = y.to(device)
-
-            optimizer.zero_grad()
-            outputs = generative_model(x)
-
-            loss = criterion(outputs, y)
-            loss.backward()
-            optimizer.step()
-
-            step_loss += loss.item()
-            step_total += x.size(0)
-
-        step_time = datetime.now() - start_time
-        step_loss /= step_total
-
-        if st % 10 == 0:
-            print("step:{} / loss:{} / time:{}".format(st, step_loss, step_time))
-            generated_img = outputs[0].permute(1,2,0).detach().cpu().numpy()
+        if st % 100 == 0:
+            img = model.predict(cctv)
             fig = plt.figure()
-            plt.imshow(generated_img)
-            
-    print("학습 완료")
+            print(plt.imshow(img[0]))
+
+    print('학습 완료')
+    print(history)
 
 def test(args):
     print('test')
 
+def main(args):
+    if args.train == 'train':
+        train(args)
+    else:
+        test(args)
+
 if __name__ == '__main__':
-    main()
-
-
-# 모델 저장
-#torch.save(model.state_dict(), weight_path)
+    main(args)
