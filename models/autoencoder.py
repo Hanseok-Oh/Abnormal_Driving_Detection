@@ -103,8 +103,8 @@ def Autoencoder_v3(drop_rate=0):
     x = L.AveragePooling2D((2, 2))(x)
     encoded = L.Flatten()(x)
 
-    input_latent = L.Input(shape=(8*8*128,))
-    _x = L.Reshape((8,8,128))(input_latent)
+    input_latent = L.Input(shape=(4*4*128,))
+    _x = L.Reshape((4,4,128))(input_latent)
     _x = L.Conv2D(128, (3, 3), activation='relu', padding='same')(_x)
     _x = L.Dropout(drop_rate)(_x)
     _x = L.UpSampling2D((2, 2))(_x)
