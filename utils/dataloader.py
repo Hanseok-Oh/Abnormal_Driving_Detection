@@ -21,7 +21,7 @@ class Dataloader:
         random_video_frame = random_video_frame.astype('float32') / 255
 
         if self.resize:
-            random_video_frame = [tf.image.resize(i, (64,64,3)) for i in random_video_frame]
+            random_video_frame = [tf.image.resize(i, (64,64)) for i in random_video_frame]
         return random_video_frame
 
 
