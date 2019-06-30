@@ -4,10 +4,11 @@ import cv2
 import random
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 from PIL import Image
 
 class Imageloader:
-    def __init__(self, directory, resize, batch_size=32, batch_per_video=4):
+    def __init__(self, directory, resize=False, batch_size=32, batch_per_video=4):
         self.directory = directory
         self.resize = resize
         self.batch_size = batch_size
@@ -20,6 +21,9 @@ class Imageloader:
             i = 0
             for video in selected_video:
                 frame = self._choose_autoencoder_frame(video)
+                if self.resize:
+                    frame = np.array([cv2.resize(i, dsize=(256, 256), interpolation=cv2.INTER_LINEAR) for i in frame])
+                print(frame.shape)
                 if i == 0:
                     X = frame
                 else:
