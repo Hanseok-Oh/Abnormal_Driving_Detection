@@ -23,7 +23,6 @@ class Imageloader:
                 frame = self._choose_autoencoder_frame(video)
                 if self.resize:
                     frame = np.array([cv2.resize(i, dsize=(256, 256), interpolation=cv2.INTER_LINEAR) for i in frame])
-                print(frame.shape)
                 if i == 0:
                     X = frame
                 else:
