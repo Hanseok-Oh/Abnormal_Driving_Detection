@@ -93,6 +93,3 @@ def Autoencoder_v2(drop_rate=0):
     _decoded = decoder(_encoded)
     autoencoder = Model(input_img, _decoded)
     return autoencoder
-
-a = Autoencoder_v2()
-print(a.summary())
