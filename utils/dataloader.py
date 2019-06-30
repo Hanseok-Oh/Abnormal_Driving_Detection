@@ -27,6 +27,7 @@ class Imageloader:
                     X = frame
                 else:
                     X = np.concatenate((X, frame))
+
                 i += 1
 
             X = X.astype(float) / 255
