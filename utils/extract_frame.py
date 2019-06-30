@@ -20,6 +20,7 @@ def get_video_list(load_path):
 def get_video_frame(video, load_path, save_path, offset):
     if not os.path.isdir(save_path):
         os.mkdir(save_path)
+
     video_save_path = os.path.join(save_path, video[:-4])
     if not os.path.isdir(video_save_path):
         os.mkdir(video_save_path)

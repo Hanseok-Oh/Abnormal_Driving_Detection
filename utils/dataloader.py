@@ -30,23 +30,26 @@ class Imageloader:
             yield (X, X)
 
 
-    def rnn_loader(self, offset_x, offset_y):
-        while True:
-            selected_video = self._choose_random_video()
-            i = 0
-            for video in selected_video:
-                frame_x, frame_y = self._choose_rnn_frame(video, offset_x, offset_y)
-                if i == 0:
-                    X = frame_x
-                    Y = frame_y
-                else:
-                    X = np.concatenate((X, frame_x))
-                    Y = np.concatenate((Y, frame_y))
-                i += 1
+    def rnn_loader(self, graph, encoder, offset_x, offset_y):
+        with graph.as_default():
+            while True:
+                selected_video = self._choose_random_video()
+                i = 0
+                for video in selected_video:
+                    frame_x, frame_y = self._choose_rnn_frame(video, offset_x, offset_y)
+                    latent_x = np.array([encoder.predict(i) for i in frame_x])
+                    latent_y = encoder.predict(frame_y)
+                    if i == 0:
+                        X = latent_x
+                        Y = latent_y
+                    else:
+                        X = np.concatenate((X, latent_x))
+                        Y = np.concatenate((Y, latent_y))
+                    i += 1
 
-            X = X.astype(float) / 255
-            Y = Y.astype(float) / 255
-            yield (X, Y)
+                X = X.astype('float32') / 255
+                Y = Y.astype('float32') / 255
+                yield (X, Y)
 
 
     def _choose_random_video(self):
