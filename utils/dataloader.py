@@ -26,7 +26,7 @@ class Imageloader:
                     X = np.concatenate((X, frame))
                 i += 1
 
-            X /= 255
+            X = X / 255
             yield (X, X)
 
 
@@ -44,8 +44,8 @@ class Imageloader:
                     Y = np.concatenate((Y, frame_y))
                 i += 1
 
-            X /= 255
-            Y /= 255
+            X = X / 255
+            Y = Y / 255
             yield (X, Y)
 
 
