@@ -8,9 +8,8 @@ import matplotlib.pyplot as plt
 from PIL import Image
 
 class DataLoader:
-    def __init__(self, directory, resize=False, batch_size=32, batch_per_video=4):
+    def __init__(self, directory, batch_size=32, batch_per_video=4):
         self.directory = directory
-        self.resize = resize
         self.batch_size = batch_size
         self.batch_per_video = batch_per_video
 
@@ -18,17 +17,12 @@ class DataLoader:
     def autoencoder_loader(self):
         while True:
             selected_video = self._choose_random_video()
-            i = 0
             for video in selected_video:
                 frame = self._choose_autoencoder_frame(video)
-                if self.resize:
-                    frame = np.array([cv2.resize(i, dsize=(256, 256), interpolation=cv2.INTER_LINEAR) for i in frame])
-                if i == 0:
+                if not X:
                     X = frame
                 else:
                     X = np.concatenate((X, frame))
-
-                i += 1
 
             X = X.astype(float) / 255
             yield (X, X)
@@ -38,22 +32,17 @@ class DataLoader:
         with graph.as_default():
             while True:
                 selected_video = self._choose_random_video()
-                i = 0
                 for video in selected_video:
                     frame_x, frame_y = self._choose_rnn_frame(video, offset_x, offset_y)
-                    if self.resize:
-                        frame_x = np.array([cv2.resize(i, dsize=(256, 256), interpolation=cv2.INTER_LINEAR) for i in frame_x])
-                        frame_y = np.array([cv2.resize(i, dsize=(256, 256), interpolation=cv2.INTER_LINEAR) for i in frame_y])
-
                     latent_x = np.array([encoder.predict(i) for i in frame_x])
                     latent_y = encoder.predict(frame_y)
-                    if i == 0:
+
+                    if not X:
                         X = latent_x
                         Y = latent_y
                     else:
                         X = np.concatenate((X, latent_x))
                         Y = np.concatenate((Y, latent_y))
-                    i += 1
 
                 X = X.astype('float32') / 255
                 Y = Y.astype('float32') / 255
