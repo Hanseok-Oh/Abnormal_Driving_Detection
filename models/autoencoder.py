@@ -6,7 +6,7 @@ import numpy as np
 
 
 def Autoencoder_v1():
-    input_img = L.Input(shape=(256, 256, None))
+    input_img = L.Input(shape=(256, 256, 3))
     conv1 = L.Conv2D(32, (3, 3), activation='relu', padding='same')(input_img)
     pool1 = L.MaxPooling2D((2, 2))(conv1)
     conv2 = L.Conv2D(64, (3, 3), activation='relu', padding='same')(pool1)
