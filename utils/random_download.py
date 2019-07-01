@@ -20,7 +20,7 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument('--auth_key', help='발급된 인증키', type=str)
 parser.add_argument('--download_path', help='다운로드 경로', type=str)
-parser.add_argument('--download_num', help='다운로드 개수', type=int, default=300)
+parser.add_argument('--download_num', help='다운로드 개수', type=int, default=10)
 parser.add_argument('--road_type', help='ex(고속도로) / its(국도)', type=str, default='ex')
 args = parser.parse_args()
 
@@ -57,7 +57,7 @@ def format_name(cctv_name):
         formatted_name += regex_name[i]
 
     now = datetime.now()
-    formatted_name = '{}_{}_{}'.format(formatted_name, now.strftime('%m%d'), now.strftime('%H%M'))
+    formatted_name = '{}_{}_{}'.format(now.strftime('%m%d'), now.strftime('%H%M'), formatted_name)
     return formatted_name
 
 

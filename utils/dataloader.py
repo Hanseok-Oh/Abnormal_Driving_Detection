@@ -41,6 +41,10 @@ class Imageloader:
                 i = 0
                 for video in selected_video:
                     frame_x, frame_y = self._choose_rnn_frame(video, offset_x, offset_y)
+                    if self.resize:
+                        frame_x = np.array([cv2.resize(i, dsize=(256, 256), interpolation=cv2.INTER_LINEAR) for i in frame_x])
+                        frame_y = np.array([cv2.resize(i, dsize=(256, 256), interpolation=cv2.INTER_LINEAR) for i in frame_y])
+
                     latent_x = np.array([encoder.predict(i) for i in frame_x])
                     latent_y = encoder.predict(frame_y)
                     if i == 0:
