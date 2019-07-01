@@ -5,7 +5,7 @@ import keras.backend as K
 import numpy as np
 
 
-def Autoencoder_v2():
+def Autoencoder_v1():
     input_img = L.Input(shape=(256, 256, None))
     conv1 = L.Conv2D(32, (3, 3), activation='relu', padding='same')(input_img)
     pool1 = L.MaxPooling2D((2, 2))(conv1)
