@@ -1,5 +1,4 @@
-av
+cv2
 keras
 numpy
 matplotlib
-

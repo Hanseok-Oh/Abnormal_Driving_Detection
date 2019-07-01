@@ -1,4 +1,3 @@
-import av
 import os
 import cv2
 import random
