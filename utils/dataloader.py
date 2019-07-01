@@ -7,7 +7,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from PIL import Image
 
-class Imageloader:
+class DataLoader:
     def __init__(self, directory, resize=False, batch_size=32, batch_per_video=4):
         self.directory = directory
         self.resize = resize
@@ -97,69 +97,3 @@ def idx_to_array(idx, video_path):
     im = Image.open(img_path)
     arr = np.array(im)
     return arr
-
-
-class Dataloader:
-    def __init__(self, video_directory_path, resize=(64,64,3)):
-        self.video_directory_path = video_directory_path
-        self.video_list = self._get_video_list()
-        self.resize = resize
-
-
-    def choose_random_video(self):
-        random_video = np.random.choice(self.video_list)
-        try:
-            random_video_frame = self._get_video_frame(random_video)
-        except:
-            random_video_frame = self._get_video_frame_cv2(random_video)
-
-        random_video_frame = random_video_frame.astype('float32') / 255
-
-        if self.resize:
-            random_video_frame = [np.resize(i, self.resize) for i in random_video_frame]
-            random_video_frame = np.array(random_video_frame)
-        return random_video_frame
-
-    def get_total_frames(self):
-        for i in range(len(self.video_list)):
-            cctv = self.video_list[i]
-            frame = self._get_video_frame(cctv)
-            if i == 0:
-                total_frame = np.array(frame)
-            else:
-                total_frame = np.concatenate((total_frame, frame), axis=0)
-        return total_frame
-
-    def _get_video_list(self):
-        video_list = os.listdir(self.video_directory_path)
-        return [os.path.join(self.video_directory_path, i) for i in video_list]
-
-
-    def _get_video_frame(self, video_path):
-        container = av.open(video_path)
-        video = container.streams.video[0]
-        frames = container.decode(video=0)
-
-        frame_list = []
-        for frame in frames:
-            img = frame.to_image()
-            img = np.array(img)
-            frame_list.append(img)
-        return np.array(frame_list)
-
-
-    def _get_video_frame_cv2(self, video_path):
-        cap = cv2.VideoCapture(video_path) # video 불러오기
-        video_frame_num = int(cap.get(cv2.cv2.CAP_PROP_FRAME_COUNT)) # frame 수
-
-        # capture
-        frame_list = []
-        for i in range(video_frame_num):
-            ret, frame = cap.read()
-            frame_list.append(frame)
-
-            if cv2.waitKey(30) == 27:
-                break
-        cap.release()
-        cv2.destroyAllWindows()
-        return np.array(video_frame)
