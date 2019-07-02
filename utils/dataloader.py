@@ -19,7 +19,7 @@ class DataLoader:
             for video in selected_video:
                 frame = self._choose_autoencoder_frame(video)
 
-                if X in locals():
+                if 'X' in locals():
                     X = np.concatenate((X, frame))
                 else:
                     X = frame
@@ -37,7 +37,7 @@ class DataLoader:
                     latent_x = np.array([encoder.predict(i) for i in frame_x])
                     latent_y = encoder.predict(frame_y)
 
-                    if X in locals():
+                    if 'X' in locals():
                         X = np.concatenate((X, latent_x))
                         Y = np.concatenate((Y, latent_y))
                     else:
