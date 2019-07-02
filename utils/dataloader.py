@@ -16,13 +16,15 @@ class DataLoader:
     def autoencoder_loader(self):
         while True:
             selected_video = self._choose_random_video()
-            for video in selected_video:
+
+            for i in range(len(selected_video)):
+                video = selected_video[i]
                 frame = self._choose_autoencoder_frame(video)
 
-                if 'X' in locals():
-                    X = np.concatenate((X, frame))
-                else:
+                if i == 0:
                     X = frame
+                else:
+                    X = np.concatenate((X, frame))
 
             X = X.astype(float) / 255
             yield (X, X)
@@ -32,17 +34,19 @@ class DataLoader:
         with graph.as_default():
             while True:
                 selected_video = self._choose_random_video()
-                for video in selected_video:
+
+                for i in range(len(selected_video)):
+                    video = selected_video[i]
                     frame_x, frame_y = self._choose_rnn_frame(video, offset_x, offset_y)
                     latent_x = np.array([encoder.predict(i) for i in frame_x])
                     latent_y = encoder.predict(frame_y)
 
-                    if 'X' in locals():
-                        X = np.concatenate((X, latent_x))
-                        Y = np.concatenate((Y, latent_y))
-                    else:
+                    if i == 0:
                         X = latent_x
                         Y = latent_y
+                    else:
+                        X = np.concatenate((X, latent_x))
+                        Y = np.concatenate((Y, latent_y))
 
                 X = X.astype('float32') / 255
                 Y = Y.astype('float32') / 255
