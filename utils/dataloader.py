@@ -29,7 +29,6 @@ class DataLoader:
             X = X.astype(float) / 255
             yield (X, X)
 
-)
 
     def rnn_loader(self, graph, encoder, offset_x, offset_y):
         with graph.as_default():
