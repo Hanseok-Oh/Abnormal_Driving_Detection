@@ -19,9 +19,9 @@ class DataLoader:
             for video in selected_video:
                 frame = self._choose_autoencoder_frame(video)
                 try:
-                    X = frame
-                except:
                     X = np.concatenate((X, frame))
+                except:
+                    X = frame
 
             X = X.astype(float) / 255
             yield (X, X)
@@ -37,11 +37,12 @@ class DataLoader:
                     latent_y = encoder.predict(frame_y)
 
                     try:
-                        X = latent_x
-                        Y = latent_y
-                    except:
                         X = np.concatenate((X, latent_x))
                         Y = np.concatenate((Y, latent_y))
+                    except:
+                        X = latent_x
+                        Y = latent_y
+
 
                 X = X.astype('float32') / 255
                 Y = Y.astype('float32') / 255
