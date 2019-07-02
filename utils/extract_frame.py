@@ -1,4 +1,3 @@
-import av
 import os
 import cv2
 import argparse
@@ -49,25 +48,3 @@ def main(args):
 
 if __name__ == '__main__':
     main(args)
-
-
-'''
-def get_video_frame(video, load_path, save_path, offset):
-    if not os.path.isdir(save_path):
-        os.mkdir(save_path)
-
-    video_save_path = os.path.join(save_path, video[:-4])
-    if not os.path.isdir(video_save_path):
-        os.mkdir(video_save_path)
-
-    container = av.open(os.path.join(load_path, video))
-    frames = container.decode(video=0)
-    i = 0
-    for frame in frames:
-        if frame.index % offset == 0:
-            frame = cv2.resize(frame.to_ndarray(), dsize=(256, 256), interpolation=cv2.INTER_LINEAR)
-            Image.fromarray(frame).save(os.path.join(video_save_path, '{}.png'.format(i)))
-            i += 1
-        else:
-            continue
-'''
