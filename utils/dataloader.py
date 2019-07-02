@@ -29,6 +29,7 @@ class DataLoader:
             X = X.astype(float) / 255
             yield (X, X)
 
+)
 
     def rnn_loader(self, graph, encoder, offset_x, offset_y):
         with graph.as_default():
@@ -38,7 +39,7 @@ class DataLoader:
                 for i in range(len(selected_video)):
                     video = selected_video[i]
                     frame_x, frame_y = self._choose_rnn_frame(video, offset_x, offset_y)
-                    latent_x = np.array([encoder.predict(i) for i in frame_x])
+                    latent_x = [encoder.predict(i) for i in frame_x]
                     latent_y = encoder.predict(frame_y)
 
                     if i == 0:
