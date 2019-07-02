@@ -18,9 +18,10 @@ class DataLoader:
             selected_video = self._choose_random_video()
             for video in selected_video:
                 frame = self._choose_autoencoder_frame(video)
-                try:
+
+                if X in locals():
                     X = np.concatenate((X, frame))
-                except:
+                else:
                     X = frame
 
             X = X.astype(float) / 255
@@ -36,13 +37,12 @@ class DataLoader:
                     latent_x = np.array([encoder.predict(i) for i in frame_x])
                     latent_y = encoder.predict(frame_y)
 
-                    try:
+                    if X in locals():
                         X = np.concatenate((X, latent_x))
                         Y = np.concatenate((Y, latent_y))
-                    except:
+                    else:
                         X = latent_x
                         Y = latent_y
-
 
                 X = X.astype('float32') / 255
                 Y = Y.astype('float32') / 255
