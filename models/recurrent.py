@@ -1,3 +1,4 @@
+from keras.models import Model
 import keras.layers as L
 
 def RNN_v1(autoencoder, offset_x, rnn_dim, autoencoder_trainable=False):
