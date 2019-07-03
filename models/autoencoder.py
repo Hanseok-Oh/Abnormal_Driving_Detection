@@ -49,7 +49,7 @@ def Autoencoder():
     autoencoder = Model(input_img, _decoded)
     return autoencoder
 
-def Autoencoder():
+def Autoencoder_test():
     input_img = L.Input(shape=(256, 256, 3), name='encoder_input')
     conv1 = L.Conv2D(64, (3, 3), activation='relu', padding='same')(input_img)
     pool1 = L.AveragePooling2D((2, 2))(conv1)
