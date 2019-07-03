@@ -83,7 +83,11 @@ def Autoencoder_test():
 
     input_latent = L.Input(shape=(2*2*1024,), name='decoder_input')
     reshaped = L.Reshape((2,2,1024))(input_latent)
-    de = L.Conv2DTranspose(512, (2, 2), strides=2, padding='same')(reshaped)
+    de = L.Conv2DTranspose(1024, (2, 2), strides=2, padding='same')(reshaped)
+    de = L.Conv2D(1024, (3, 3), padding='same')(de)
+    de = L.BatchNormalization()(de)
+    de = L.Activation('relu')(de)
+    de = L.Conv2DTranspose(512, (2, 2), strides=2, padding='same')(de)
     de = L.Conv2D(512, (3, 3), padding='same')(de)
     de = L.BatchNormalization()(de)
     de = L.Activation('relu')(de)
