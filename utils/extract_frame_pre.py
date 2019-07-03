@@ -4,7 +4,6 @@ import argparse
 import numpy as np
 from PIL import Image
 
-
 # argparse
 parser = argparse.ArgumentParser()
 parser.add_argument('--load_path', help='동영상 로드 경로', type=str)
@@ -34,7 +33,7 @@ def get_video_frame(video, load_path, save_path):
     for i in range(frame_len):
         ret, frame = cap.read()
         #frame = backSub.apply(frame)
-        frame = cv2.GaussianBlur(frame,(0,0),0)
+        #frame = cv2.GaussianBlur(frame,(0,0),0)
         frame = cv2.resize(frame, dsize=(256,256), interpolation=cv2.INTER_LINEAR)
         os.chdir(video_save_path)
         cv2.imwrite('{}.png'.format(i), frame)
