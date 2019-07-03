@@ -75,7 +75,8 @@ def download_cctv(random_cctv, download_path):
 
     for i in range(len(random_cctv)):
         cctv = random_cctv.iloc[i]
-        urllib.request.urlretrieve(cctv['url'], '{}{}.mp4'.format(download_path, cctv['formatted_name']))
+        #urllib.request.urlretrieve(cctv['url'], '{}{}.mp4'.format(download_path, cctv['formatted_name']))
+        urllib.request.urlretrieve(cctv['url'], os.path.join(download_path, '{}.mp4'.format(cctv['formatted_name'])))
     print('다운로드 완료')
 
 
