@@ -123,13 +123,17 @@ def VAE(latent_dim=256):
     decoder = Model(decoder_input, decoded, name='decoder')
     output = decoder(encoder(encoder_input)[2])
 
-    reconstruction_loss = keras.losses.mse(encoder_input, output)
-    kl_loss = 0.5 * K.sum(1 + z_log_var - K.square(z_mean) - K.exp(z_log_var), axis=1)
-    vae_loss = K.mean(reconstruction_loss + kl_loss)
+    def vae_loss(y_true, y_pred):
+        reconstruction_loss = keras.losses.mse(y_true, y_pred)
+        kl_loss = 0.5 * K.sum(1 + z_log_var - K.square(z_mean) - K.exp(z_log_var), axis=1)
+        vae_loss = K.mean(reconstruction_loss + kl_loss)
+        return vae_loss
 
     vae = Model(encoder_input, output)
-    vae.add_loss(vae_loss)
-
+    vae.compile(
+        optimizer=keras.optimizers.Adam(lr=1e-3),
+        loss=vae_loss)
+        
     return vae
 
 def sampling(args):
