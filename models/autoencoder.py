@@ -6,7 +6,7 @@ import keras.backend as K
 import numpy as np
 
 
-def Autoencoder():
+def Autoencoder(optimizer):
     input_img = L.Input(shape=(256, 256, 3), name='encoder_input')
     conv1 = L.Conv2D(64, (3, 3), activation='relu', padding='same')(input_img)
     pool1 = L.MaxPooling2D((2, 2))(conv1)
@@ -47,9 +47,12 @@ def Autoencoder():
     _encoded = encoder(input_img)
     _decoded = decoder(_encoded)
     autoencoder = Model(input_img, _decoded)
+    autoencoder.compile(
+        optimizer=optimizer,
+        loss='mse')
     return autoencoder
 
-def VAE(latent_dim=256):
+def VAE(optimizer, latent_dim=256):
     encoder_input = L.Input(shape=(256, 256, 3), name='encoder_input')
     en = L.Conv2D(64, (3, 3), padding='same')(encoder_input)
     en = L.BatchNormalization()(en)
@@ -131,7 +134,7 @@ def VAE(latent_dim=256):
 
     vae = Model(encoder_input, output)
     vae.compile(
-        optimizer=keras.optimizers.Adam(lr=1e-3),
+        optimizer=optimizer,
         loss=vae_loss)
 
     return vae
