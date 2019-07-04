@@ -128,7 +128,7 @@ def VAE(optimizer, latent_dim=256):
 
     def vae_loss(y_true, y_pred, z_mean=z_mean, z_log_var=z_log_var):
         reconstruction_loss = (256*256) * K.mean(keras.losses.mse(y_true, y_pred), axis=[1,2])
-        kl_loss = 0.5 * K.sum(1 + z_log_var - K.square(z_mean) - K.exp(z_log_var), axis=1)
+        kl_loss = -0.5 * K.sum(1 + z_log_var - K.square(z_mean) - K.exp(z_log_var), axis=1)
         vae_loss = K.mean(reconstruction_loss + kl_loss)
         return vae_loss
 
