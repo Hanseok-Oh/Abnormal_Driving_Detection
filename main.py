@@ -1,60 +1,33 @@
-# modules
-import keras
 import argparse
-import numpy as np
-import matplotlib.pyplot as plt
 
-from utils.dataloader import Dataloader
-from models.autoencoder import Vanilla_Autoencoder
-
+import utils
+from utils import dataloader
+from models import autoencoder, recurrent
 
 # argparse
 parser = argparse.ArgumentParser()
-parser.add_argument('--train', help='train or test', type=str, default='train')
-parser.add_argument('--video_path', help='video directory', type=str)
-parser.add_argument('--step', help='video steps', type=int, default=1000)
-parser.add_argument('--batch_size', help='batch_size', type=int, default=32)
+parser.add_argument('--data_path', help='데이터 디렉토리', type=str)
+parser.add_argument('--train', help='train or test', type=str, defualt='train')
+parser.add_argument('--model', help='model', typ=str, default='autoencoder')
+parser.add_argument('--batch_size', help='batch size', type=int, default=32)
+parser.add_argument('--batch_per_video', help='batch per video', type=str, default=4)
+parser.add_argument('--model_path', help='model save/load path', type=str)
 args = parser.parse_args()
 
-def get_generator(dataloader, batch_size):
-    while True:
-        cctv = dataloader.choose_random_video()
-        for _ in range(int(len(cctv) / batch_size)):
-            random_idx = np.random.randint(0,len(cctv),batch_size)
-            batch = cctv[random_idx]
-            yield (batch, batch)
 
+def train():
+    return
 
-def train(args):
-    dataloader = Dataloader(args.video_path)
-    #datagen = get_generator(dataloader, args.batch_size)
-    model = Vanilla_Autoencoder()
-    print(model.summary())
-
-    print('학습 시작')
-    for st in range(args.step):
-        cctv = dataloader.choose_random_video()
-        for _ in range(int(len(cctv) / args.batch_size)):
-            random_idx = np.random.randint(0,len(cctv), args.batch_size)
-            batch = cctv[random_idx]
-            history = model.train_on_batch(batch, batch)
-
-        if st % 100 == 0:
-            img = model.predict(cctv)
-            fig = plt.figure()
-            print(plt.imshow(img[0]))
-
-    print('학습 완료')
-    print(history)
-
-def test(args):
-    print('test')
+def test():
+    return
 
 def main(args):
-    if args.train == 'train':
-        train(args)
-    else:
-        test(args)
+    train_loader = dataloader.DataLoader(args.data_path, batch_size=args.batch_size, batch_per_video=args.batch_per_video)
+
+    model_ae = autoencoder.Autoencoder()
+    rnn_dim = ae.get_layer('encoder').output_shape[1]
+    model_rnn = recurrent.RNN(model_ae, 3, rnn_dim)
+
 
 if __name__ == '__main__':
     main(args)

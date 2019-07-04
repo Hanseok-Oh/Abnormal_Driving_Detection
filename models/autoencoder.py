@@ -49,9 +49,9 @@ def Autoencoder():
     autoencoder = Model(input_img, _decoded)
     return autoencoder
 
-def Autoencoder_test():
-    input_img = L.Input(shape=(256, 256, 3), name='encoder_input')
-    en = L.Conv2D(64, (3, 3), padding='same')(input_img)
+def VAE(latent_dim=256):
+    encoder_input = L.Input(shape=(256, 256, 3), name='encoder_input')
+    en = L.Conv2D(64, (3, 3), padding='same')(encoder_input)
     en = L.BatchNormalization()(en)
     en = L.Activation('relu')(en)
     en = L.MaxPooling2D((2, 2))(en)
@@ -75,16 +75,23 @@ def Autoencoder_test():
     en = L.BatchNormalization()(en)
     en = L.Activation('relu')(en)
     en = L.MaxPooling2D((2, 2))(en)
-    en = L.Conv2D(1024, (3, 3), padding='same')(en)
+    en = L.Conv2D(512, (3, 3), padding='same')(en)
     en = L.BatchNormalization()(en)
     en = L.Activation('relu')(en)
     en = L.MaxPooling2D((2, 2))(en)
-    encoded = L.Flatten(name='encoder_output')(en)
 
-    input_latent = L.Input(shape=(2*2*1024,), name='decoder_input')
-    reshaped = L.Reshape((2,2,1024))(input_latent)
-    de = L.Conv2DTranspose(1024, (2, 2), strides=2, padding='same')(reshaped)
-    de = L.Conv2D(1024, (3, 3), padding='same')(de)
+    unflatted_shape = K.int_shape(en)
+    flatted= L.Flatten(name='encoder_output')(en)
+
+    z_mean = L.Dense(latent_dim, name='z_mean')(flatted)
+    z_log_var = L.Dense(latent_dim, name='z_log_var')(flatted)
+    z = L.Lambda(sampling, output_shape=(latent_dim,), name='z')([z_mean, z_log_var])
+
+    decoder_input = L.Input(shape=(latent_dim, ), name='decoder_input')
+    de = L.Dense(np.prod(unflatted_shape[1:]))(decoder_input)
+    de = L.Reshape((unflatted_shape[1:]))(de)
+    de = L.Conv2DTranspose(512, (2, 2), strides=2, padding='same')(de)
+    de = L.Conv2D(512, (3, 3), padding='same')(de)
     de = L.BatchNormalization()(de)
     de = L.Activation('relu')(de)
     de = L.Conv2DTranspose(512, (2, 2), strides=2, padding='same')(de)
@@ -112,10 +119,23 @@ def Autoencoder_test():
     de = L.BatchNormalization()(de)
     decoded = L.Activation('sigmoid')(de)
 
-    encoder = Model(input_img, encoded, name='encoder')
-    decoder = Model(input_latent, decoded, name='decoder')
+    encoder = Model(encoder_input, [z_mean, z_log_var, z], name='encoder')
+    decoder = Model(decoder_input, decoded, name='decoder')
+    output = decoder(encoder(encoder_input)[2])
 
-    _encoded = encoder(input_img)
-    _decoded = decoder(_encoded)
-    autoencoder = Model(input_img, _decoded)
-    return autoencoder
+    reconstruction_loss = keras.losses.mse(encoder_input, output)
+    kl_loss = 0.5 * K.sum(1 + z_log_var - K.square(z_mean) - K.exp(z_log_var), axis=1)
+    vae_loss = K.mean(reconstruction_loss + kl_loss)
+
+    vae = Model(encoder_input, output)
+    vae.add_loss(vae_loss)
+
+    return vae
+
+def sampling(args):
+    z_mean, z_log_var = args
+    batch = K.shape(z_mean)[0]
+    dim = K.int_shape(z_mean)[1]
+    # by default, random_normal has mean = 0 and std = 1.0
+    epsilon = K.random_normal(shape=(batch, dim))
+    return z_mean + K.exp(0.5 * z_log_var) * epsilon

@@ -43,7 +43,7 @@ def main(args):
     for video in video_list:
         i += 1
         get_video_frame(video, args.load_path, args.save_path)
-        print(round(i / len(video_list), 2) * 100, '% 완료')
+        print(int((i / len(video_list)) * 100), '% 완료')
     print('전체 완료')
 
 if __name__ == '__main__':
