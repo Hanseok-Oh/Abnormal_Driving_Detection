@@ -39,11 +39,14 @@ class GAN:
 
     def adversarial(self):
         am = Sequential()
+
         self.G.name = 'generator'
         am.add(self.G)
+
         self.D.name = 'discriminator'
         self.D.trainable = False
         am.add(self.D)
+
         am.compile(loss='binary_crossentropy', optimizer=keras.optimizers.Adam(lr=1e-4))
         am.summary()
         return am
@@ -59,7 +62,3 @@ class GAN:
         d_loss = 0.5 * np.add(d_loss_real, d_loss_fake)
 
         g_loss = self.AM.train_on_batch(x, valid)
-
-
-ae = AutoEncoder()
-g = GAN(ae)
