@@ -1,58 +1,63 @@
 import tensorflow as tf
 import keras
-from keras.models import Model
+from keras.models import Model, Sequential
 import keras.layers as L
 import keras.backend as K
 import numpy as np
 
 
-def Autoencoder(optimizer):
-    input_img = L.Input(shape=(256, 256, 3), name='encoder_input')
-    conv1 = L.Conv2D(64, (3, 3), activation='relu', padding='same')(input_img)
-    pool1 = L.MaxPooling2D((2, 2))(conv1)
-    conv2 = L.Conv2D(64, (3, 3), activation='relu', padding='same')(pool1)
-    pool2 = L.MaxPooling2D((2, 2))(conv2)
-    conv3 = L.Conv2D(128, (3, 3), activation='relu', padding='same')(pool2)
-    pool3 = L.MaxPooling2D((2, 2))(conv3)
-    conv4 = L.Conv2D(128, (3, 3), activation='relu', padding='same')(pool3)
-    pool4 = L.MaxPooling2D((2, 2))(conv4)
-    conv5 = L.Conv2D(256, (3, 3), activation='relu', padding='same')(pool4)
-    pool5 = L.MaxPooling2D((2, 2))(conv5)
-    conv6 = L.Conv2D(256, (3, 3), activation='relu', padding='same')(pool5)
-    pool6 = L.MaxPooling2D((2, 2))(conv6)
-    conv7 = L.Conv2D(512, (3, 3), activation='relu', padding='same')(pool6)
-    pool7 = L.MaxPooling2D((2, 2))(conv7)
-    encoded = L.Flatten(name='encoder_output')(pool7)
+def AutoEncoder(input_shape = (256,256,3)):
+    encoder = Sequential()
+    encoder.add(L.Conv2D(64, (3, 3), strides=2, padding='same', input_shape=input_shape))
+    encoder.add(L.BatchNormalization())
+    encoder.add(L.Activation('relu'))
+    encoder.add(L.MaxPooling2D((2,2)))
+    encoder.add(L.Conv2D(128, (3, 3), strides=2, padding='same'))
+    encoder.add(L.BatchNormalization())
+    encoder.add(L.Activation('relu'))
+    encoder.add(L.MaxPooling2D((2,2)))
+    encoder.add(L.Conv2D(256, (3, 3), strides=2, padding='same'))
+    encoder.add(L.BatchNormalization())
+    encoder.add(L.Activation('relu'))
+    encoder.add(L.MaxPooling2D((2,2)))
+    encoder.add(L.Conv2D(512, (3, 3), strides=2, padding='same'))
+    encoder.add(L.BatchNormalization())
+    encoder.add(L.Activation('relu'))
+    encoder.add(L.MaxPooling2D((2,2)))
+    encoder.add(L.Conv2D(1024, (3, 3), strides=2, padding='same'))
+    encoder.add(L.BatchNormalization())
+    encoder.add(L.Activation('relu', name='unflattened'))
+    encoder.add(L.Flatten(name='flattened'))
 
-    input_latent = L.Input(shape=(2*2*512,), name='decoder_input')
-    reshaped = L.Reshape((2,2,512))(input_latent)
-    _up1 = L.Conv2DTranspose(256, (2, 2), strides=2, padding='same')(reshaped)
-    _conv1 = L.Conv2D(256, (3, 3), activation='relu', padding='same')(_up1)
-    _up2 = L.Conv2DTranspose(256, (2, 2), strides=2, padding='same')(_conv1)
-    _conv2 = L.Conv2D(256, (3, 3), activation='relu', padding='same')(_up2)
-    _up3 = L.Conv2DTranspose(128, (2, 2), strides=2, padding='same')(_conv2)
-    _conv3 = L.Conv2D(128, (3, 3), activation='relu', padding='same')(_up3)
-    _up4 = L.Conv2DTranspose(128, (2, 2), strides=2, padding='same')(_conv3)
-    _conv4 = L.Conv2D(128, (3, 3), activation='relu', padding='same')(_up4)
-    _up5 = L.Conv2DTranspose(64, (2, 2), strides=2, padding='same')(_conv4)
-    _conv5 = L.Conv2D(64, (3, 3), activation='relu', padding='same')(_up5)
-    _up6 = L.Conv2DTranspose(64, (2, 2), strides=2, padding='same')(_conv5)
-    _conv6 = L.Conv2D(64, (3, 3), activation='relu', padding='same')(_up6)
-    _up7 = L.Conv2DTranspose(3, (2, 2), strides=2, padding='same')(_conv6)
-    decoded = L.Conv2D(3, (3, 3), activation='relu', padding='same', name='decoder_output')(_up7)
+    unflattened_shape = encoder.get_layer('unflattened').output_shape[1:]
+    flattened_shape = encoder.get_layer('flattened').output_shape[1:]
 
-    encoder = Model(input_img, encoded, name='encoder')
-    decoder = Model(input_latent, decoded, name='decoder')
+    decoder = Sequential()
+    decoder.add(L.Reshape(target_shape=unflattened_shape, input_shape=flattened_shape))
+    decoder.add(L.Conv2DTranspose(512, (2, 2), strides=2, padding='same'))
+    decoder.add(L.Activation('relu'))
+    decoder.add(L.Conv2DTranspose(256, (2, 2), strides=2, padding='same'))
+    decoder.add(L.Activation('relu'))
+    decoder.add(L.Conv2DTranspose(128, (2, 2), strides=2, padding='same'))
+    decoder.add(L.Activation('relu'))
+    decoder.add(L.Conv2DTranspose(64, (2, 2), strides=2, padding='same'))
+    decoder.add(L.Activation('relu'))
+    decoder.add(L.Conv2DTranspose(32, (2, 2), strides=2, padding='same'))
+    decoder.add(L.Activation('relu'))
+    decoder.add(L.Conv2DTranspose(16, (2, 2), strides=2, padding='same'))
+    decoder.add(L.Activation('relu'))
+    decoder.add(L.Conv2DTranspose(8, (2, 2), strides=2, padding='same'))
+    decoder.add(L.Activation('relu'))
+    decoder.add(L.Conv2DTranspose(3, (2, 2), strides=2, padding='same'))
+    decoder.add(L.Activation('sigmoid'))
 
-    _encoded = encoder(input_img)
-    _decoded = decoder(_encoded)
-    autoencoder = Model(input_img, _decoded)
-    autoencoder.compile(
-        optimizer=optimizer,
-        loss='mse')
+    autoencoder = Sequential()
+    autoencoder.add(encoder)
+    autoencoder.add(decoder)
     return autoencoder
 
-def VAE(optimizer, latent_dim=256):
+
+def VAE(optimizer, latent_dim=512):
     encoder_input = L.Input(shape=(256, 256, 3), name='encoder_input')
     en = L.Conv2D(64, (3, 3), padding='same')(encoder_input)
     en = L.BatchNormalization()(en)
@@ -88,7 +93,7 @@ def VAE(optimizer, latent_dim=256):
 
     z_mean = L.Dense(latent_dim, name='z_mean')(flatted)
     z_log_var = L.Dense(latent_dim, name='z_log_var')(flatted)
-    z = L.Lambda(sampling, output_shape=(latent_dim,), name='z')([z_mean, z_log_var])
+    z = L.Lambda(_sampling, output_shape=(latent_dim,), name='z')([z_mean, z_log_var])
 
     decoder_input = L.Input(shape=(latent_dim, ), name='decoder_input')
     de = L.Dense(np.prod(unflatted_shape[1:]))(decoder_input)
@@ -119,7 +124,6 @@ def VAE(optimizer, latent_dim=256):
     de = L.Activation('relu')(de)
     de = L.Conv2DTranspose(3, (2, 2), strides=2, padding='same')(de)
     de = L.Conv2D(3, (3, 3), padding='same')(de)
-    de = L.BatchNormalization()(de)
     decoded = L.Activation('sigmoid')(de)
 
     encoder = Model(encoder_input, [z_mean, z_log_var, z], name='encoder')
@@ -139,10 +143,9 @@ def VAE(optimizer, latent_dim=256):
 
     return vae
 
-def sampling(args):
+def _sampling(args):
     z_mean, z_log_var = args
     batch = K.shape(z_mean)[0]
     dim = K.int_shape(z_mean)[1]
-    # by default, random_normal has mean = 0 and std = 1.0
     epsilon = K.random_normal(shape=(batch, dim))
     return z_mean + K.exp(0.5 * z_log_var) * epsilon
