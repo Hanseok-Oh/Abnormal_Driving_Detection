@@ -6,7 +6,7 @@ import keras.backend as K
 import numpy as np
 
 
-def AutoEncoder(input_shape = (256,256,3)):
+def AutoEncoder(input_shape = (256,256,1)):
     encoder = Sequential()
     encoder.add(L.Conv2D(64, (3, 3), strides=2, padding='same', input_shape=input_shape))
     encoder.add(L.BatchNormalization())
@@ -48,7 +48,7 @@ def AutoEncoder(input_shape = (256,256,3)):
     decoder.add(L.Activation('relu'))
     decoder.add(L.Conv2DTranspose(8, (2, 2), strides=2, padding='same'))
     decoder.add(L.Activation('relu'))
-    decoder.add(L.Conv2DTranspose(3, (2, 2), strides=2, padding='same'))
+    decoder.add(L.Conv2DTranspose(1, (2, 2), strides=2, padding='same'))
     decoder.add(L.Activation('sigmoid'))
 
     autoencoder = Sequential()
