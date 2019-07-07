@@ -8,7 +8,9 @@ import numpy as np
 
 def AutoEncoder(input_shape = (256,256,)):
     encoder = Sequential()
+    encoder.output_shape()
     encoder.add(L.Reshape((256,256,1,), input_shape=(256,256,)))
+    encodner.output_shape()
     encoder.add(L.Conv2D(64, (3, 3), strides=2, padding='same', input_shape=input_shape))
     encoder.add(L.BatchNormalization())
     encoder.add(L.Activation('relu'))
