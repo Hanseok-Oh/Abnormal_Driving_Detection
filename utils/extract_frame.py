@@ -3,7 +3,7 @@ import cv2
 import argparse
 import numpy as np
 from PIL import Image
-
+from defogging import Defog
 
 # argparse
 parser = argparse.ArgumentParser()
@@ -34,7 +34,12 @@ def get_video_frame(video, load_path, save_path):
         ret, frame = cap.read()
         frame = cv2.resize(frame, dsize=(256,256), interpolation=cv2.INTER_LINEAR)
         os.chdir(video_save_path)
-        cv2.imwrite('{}.png'.format(i), frame)
+        df = Defog()
+        df.read_img(frame)
+        df.defog()
+        df.save_img('{}.png'.format(i))
+        
+#         cv2.imwrite('{}.png'.format(i), frame)
     cap.release()
 
 def main(args):
