@@ -30,16 +30,25 @@ def get_video_frame(video, load_path, save_path):
     cap = cv2.VideoCapture(os.path.join(load_path, video))
     frame_len = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 
+    fgbg = cv2.createBackgroundSubtractorMOG2()
+    
     for i in range(frame_len):
         ret, frame = cap.read()
         frame = cv2.resize(frame, dsize=(256,256), interpolation=cv2.INTER_LINEAR)
         os.chdir(video_save_path)
-        df = Defog()
-        df.read_img(frame)
-        df.defog()
-        df.save_img('{}.png'.format(i))
+#         df = Defog()
+#         df.read_img(frame)
+#         df.defog()
+#         df.save_img('{}.png'.format(i))
+
+#         fgbg = cv2.createBackgroundSubtractorMOG2()
+#         fgmask = fgbg.apply(frame)
+#         cv2.imshow('frame',fgmask)
         
-#         cv2.imwrite('{}.png'.format(i), frame)
+        fgmask=fgbg.apply(frame)
+        blur = cv2.GaussianBlur(fgmask,(5,5),0)
+        
+        cv2.imwrite('{}.png'.format(i), blur)
     cap.release()
 
 def main(args):
