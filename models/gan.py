@@ -30,6 +30,7 @@ class GAN:
         d.add(L.Conv2D(512, (5, 5), strides=2, padding='same'))
         d.add(L.LeakyReLU(0.2))
         d.add(L.Flatten())
+        d.add(L.Dense(128))
         d.add(L.Dense(1))
         d.add(L.Activation('sigmoid'))
         d.compile(loss='binary_crossentropy', optimizer=keras.optimizers.Adam(lr=1e-4))
