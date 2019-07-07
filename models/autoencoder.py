@@ -6,7 +6,7 @@ import keras.backend as K
 import numpy as np
 
 
-def AutoEncoder(input_shape = (256,256,1)):
+def AutoEncoder(input_shape = (256,256)):
     encoder = Sequential()
     encoder.add(L.Conv2D(64, (3, 3), strides=2, padding='same', input_shape=input_shape))
     encoder.add(L.BatchNormalization())
@@ -123,7 +123,7 @@ def VAE(optimizer, latent_dim=512):
     de = L.BatchNormalization()(de)
     de = L.Activation('relu')(de)
     de = L.Conv2DTranspose(3, (2, 2), strides=2, padding='same')(de)
-    de = L.Conv2D(3, (3, 3), padding='same')(de)
+    de = L.Conv2D((3, 3), padding='same')(de)
     decoded = L.Activation('sigmoid')(de)
 
     encoder = Model(encoder_input, [z_mean, z_log_var, z], name='encoder')
