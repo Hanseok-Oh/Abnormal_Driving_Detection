@@ -52,7 +52,7 @@ class GAN:
         return am
 
 
-    def train(self, x):
+    def train(self, x, y):
         valid = np.ones((len(x), 1))
         fake = np.zeros((len(x), 1))
 
@@ -62,3 +62,4 @@ class GAN:
         d_loss = 0.5 * np.add(d_loss_real, d_loss_fake)
 
         g_loss = self.AM.train_on_batch(x, valid)
+        return d_loss, g_loss
