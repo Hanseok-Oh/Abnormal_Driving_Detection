@@ -6,7 +6,7 @@ import keras.backend as K
 import numpy as np
 
 
-def AutoEncoder(input_shape = (256,256,3)):
+def AutoEncoder_256(input_shape = (256,256,3)):
     encoder = Sequential()
     encoder.add(L.Conv2D(64, (3, 3), strides=2, padding='same', input_shape=input_shape))
     encoder.add(L.Activation('relu'))
@@ -71,7 +71,57 @@ def AutoEncoder(input_shape = (256,256,3)):
     autoencoder.add(decoder)
     return autoencoder
 
-a = AutoEncoder()
+def AutoEncoder_64(input_shape = (64, 64, 3)):
+    encoder = Sequential()
+    encoder.add(L.Conv2D(64, (3, 3), strides=2, padding='same', input_shape=input_shape))
+    encoder.add(L.Activation('relu'))
+    encoder.add(L.MaxPooling2D((2,2)))
+    encoder.add(L.Conv2D(128, (3, 3), strides=2, padding='same'))
+    encoder.add(L.Activation('relu'))
+    encoder.add(L.MaxPooling2D((2,2)))
+    encoder.add(L.Conv2D(256, (3, 3), strides=2, padding='same'))
+    encoder.add(L.Activation('relu'))
+    encoder.add(L.MaxPooling2D((2,2)))
+    encoder.add(L.Conv2D(512, (3, 3), strides=2, padding='same'))
+    encoder.add(L.Activation('relu', name='unflattened'))
+    encoder.add(L.Flatten(name='flattened'))
+
+    unflattened_shape = encoder.get_layer('unflattened').output_shape[1:]
+    flattened_shape = encoder.get_layer('flattened').output_shape[1:]
+
+    decoder = Sequential()
+    decoder.add(L.Reshape(target_shape=unflattened_shape, input_shape=flattened_shape))
+    decoder.add(L.Conv2DTranspose(512, (2, 2), strides=2, padding='same'))
+    decoder.add(L.Activation('relu'))
+    decoder.add(L.Conv2D(512, (2, 2), strides=1, padding='same'))
+    decoder.add(L.Activation('relu'))
+    decoder.add(L.Conv2DTranspose(256, (2, 2), strides=2, padding='same'))
+    decoder.add(L.Activation('relu'))
+    decoder.add(L.Conv2D(256, (2, 2), strides=1, padding='same'))
+    decoder.add(L.Activation('relu'))
+    decoder.add(L.Conv2DTranspose(128, (2, 2), strides=2, padding='same'))
+    decoder.add(L.Activation('relu'))
+    decoder.add(L.Conv2D(128, (2, 2), strides=1, padding='same'))
+    decoder.add(L.Activation('relu'))
+    decoder.add(L.Conv2DTranspose(64, (2, 2), strides=2, padding='same'))
+    decoder.add(L.Activation('relu'))
+    decoder.add(L.Conv2D(64, (2, 2), strides=1, padding='same'))
+    decoder.add(L.Activation('relu'))
+    decoder.add(L.Conv2DTranspose(32, (2, 2), strides=2, padding='same'))
+    decoder.add(L.Activation('relu'))
+    decoder.add(L.Conv2D(32, (2, 2), strides=1, padding='same'))
+    decoder.add(L.Activation('relu'))
+    decoder.add(L.Conv2DTranspose(3, (2, 2), strides=2, padding='same'))
+    decoder.add(L.Activation('relu'))
+    decoder.add(L.Conv2D(3, (2, 2), strides=1, padding='same'))
+    decoder.add(L.Activation('sigmoid'))
+
+    autoencoder = Sequential()
+    autoencoder.add(encoder)
+    autoencoder.add(decoder)
+    return autoencoder
+
+a = AutoEncoder_64()
 print(a.summary())
 
 def VAE(optimizer, latent_dim=512):
