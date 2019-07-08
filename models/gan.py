@@ -4,7 +4,6 @@ from keras.models import Model, Sequential
 import keras.layers as L
 import keras.backend as K
 import numpy as np
-from autoencoder import AutoEncoder
 
 class GAN:
     def __init__(self, autoencoder):

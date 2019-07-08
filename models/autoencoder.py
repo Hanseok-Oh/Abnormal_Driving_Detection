@@ -121,8 +121,6 @@ def AutoEncoder_64(input_shape = (64, 64, 3)):
     autoencoder.add(decoder)
     return autoencoder
 
-a = AutoEncoder_64()
-print(a.summary())
 
 def VAE(optimizer, latent_dim=512):
     encoder_input = L.Input(shape=(256, 256, 3), name='encoder_input')
