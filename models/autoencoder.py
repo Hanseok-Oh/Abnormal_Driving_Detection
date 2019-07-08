@@ -21,6 +21,7 @@ def create_deconv_block(model, size, last=False):
     model.add(L.UpSampling2D((2, 2)))
     return model
 
+
 def AutoEncoder_256(input_shape = (256,256,3)):
     encoder = Sequential()
     encoder.add(L.Conv2D(64, (3, 3), strides=2, padding='same', input_shape=input_shape))
@@ -95,6 +96,7 @@ def AutoEncoder_128(input_shape = (128, 128, 3)):
     encoder = create_conv_block(encoder, 512)
     encoder = create_conv_block(encoder, 1024)
     encoder = create_conv_block(encoder, 1024)
+    encoder = create_conv_block(encoder, 2048)
     encoder.add(L.Flatten())
 
     unflattened_shape = encoder.get_layer(index=-2).output_shape[1:]
@@ -102,6 +104,7 @@ def AutoEncoder_128(input_shape = (128, 128, 3)):
 
     decoder = Sequential()
     decoder.add(L.Reshape(target_shape=unflattened_shape, input_shape=flattened_shape))
+    decoder = create_deconv_block(decoder, 2048)    
     decoder = create_deconv_block(decoder, 1024)
     decoder = create_deconv_block(decoder, 512)
     decoder = create_deconv_block(decoder, 512)
