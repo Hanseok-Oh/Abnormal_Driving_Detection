@@ -45,7 +45,7 @@ def main(args):
         i += 1
         get_video_frame(video, args.load_path, args.save_path)
 
-        if i % 10 == 0:
+        if i % 100 == 0:
             print('{}% 완료'.format(int((i / len(video_list)) * 100)))
     print('전체 완료')
 
