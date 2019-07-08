@@ -18,7 +18,8 @@ def create_deconv_block(model, size, last=False):
         model.add(L.Conv2D(size, (2, 2), strides=1, padding='same', activation='sigmoid'))
     else:
         model.add(L.Conv2D(size, (2, 2), strides=1, padding='same', activation='relu'))
-    model.add(L.UpSampling2D((2, 2)))
+    #model.add(L.UpSampling2D((2, 2)))
+    model.add(L.Conv2DTranspose(size, (2, 2), strides=2, padding='same'))
     return model
 
 
