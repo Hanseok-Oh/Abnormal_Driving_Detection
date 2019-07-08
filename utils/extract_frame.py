@@ -9,6 +9,7 @@ from PIL import Image
 parser = argparse.ArgumentParser()
 parser.add_argument('--load_path', help='동영상 로드 경로', type=str)
 parser.add_argument('--save_path', help='이미지 저장 경로', type=str)
+parser.add_argument('--size', help='이미지 저장 사이즈', type=int, default=64)
 args = parser.parse_args()
 
 
@@ -32,7 +33,7 @@ def get_video_frame(video, load_path, save_path):
 
     for i in range(frame_len):
         ret, frame = cap.read()
-        frame = cv2.resize(frame, dsize=(256,256), interpolation=cv2.INTER_LINEAR)
+        frame = cv2.resize(frame, dsize=(args.size, args.size), interpolation=cv2.INTER_LINEAR)
         os.chdir(video_save_path)
         cv2.imwrite('{}.png'.format(i), frame)
     cap.release()
