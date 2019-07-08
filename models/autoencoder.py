@@ -104,7 +104,7 @@ def AutoEncoder_128(input_shape = (128, 128, 3)):
 
     decoder = Sequential()
     decoder.add(L.Reshape(target_shape=unflattened_shape, input_shape=flattened_shape))
-    decoder = create_deconv_block(decoder, 2048)    
+    decoder = create_deconv_block(decoder, 2048)
     decoder = create_deconv_block(decoder, 1024)
     decoder = create_deconv_block(decoder, 512)
     decoder = create_deconv_block(decoder, 512)
@@ -117,8 +117,6 @@ def AutoEncoder_128(input_shape = (128, 128, 3)):
     autoencoder.add(decoder)
     return autoencoder
 
-a = AutoEncoder_128()
-print(a.summary())
 
 def AutoEncoder_64(input_shape = (64, 64, 3)):
     encoder = Sequential()
