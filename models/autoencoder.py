@@ -108,6 +108,10 @@ def AutoEncoder_128(input_shape = (128, 128, 3)):
     encoder = create_conv_block(encoder, 1024)
     encoder = create_conv_block(encoder, 1024)
     encoder.add(L.MaxPooling2D((2,2)))
+    encoder = create_conv_block(encoder, 1024)
+    encoder = create_conv_block(encoder, 1024)
+    encoder = create_conv_block(encoder, 1024)
+    encoder.add(L.MaxPooling2D((2,2)))
     encoder.add(L.Flatten())
 
     unflattened_shape = encoder.get_layer(index=-2).output_shape[1:]
@@ -116,6 +120,10 @@ def AutoEncoder_128(input_shape = (128, 128, 3)):
     decoder = Sequential()
     decoder.add(L.Reshape(target_shape=unflattened_shape, input_shape=flattened_shape))
     #decoder.add(L.UpSampling2D((2, 2)))
+    decoder.add(L.Conv2DTranspose(1024, (2, 2), strides=2, padding='same'))
+    decoder = create_conv_block(decoder, 1024)
+    decoder = create_conv_block(decoder, 1024)
+    decoder = create_conv_block(decoder, 1024)
     decoder.add(L.Conv2DTranspose(1024, (2, 2), strides=2, padding='same'))
     decoder = create_conv_block(decoder, 1024)
     decoder = create_conv_block(decoder, 1024)
