@@ -5,22 +5,19 @@ import keras.layers as L
 import keras.backend as K
 import numpy as np
 
-def create_conv_block(model, size, init=False, input_shape=None):
+def create_conv_block(model, size, init=False, input_shape=None, last=False):
     if init:
-        model.add(L.Conv2D(size, (2, 2), strides=1, padding='same', activation='relu', input_shape=input_shape))
+        model.add(L.Conv2D(size, (2, 2), strides=1, padding='same', input_shape=input_shape))
     else:
-        model.add(L.Conv2D(size, (2, 2), strides=1, padding='same', activation='relu'))
-    model.add(L.MaxPooling2D((2,2)))
+        model.add(L.Conv2D(size, (2, 2), strides=1, padding='same'))
+    model.add(L.BatchNormalization())
+
+    if last:
+        model.add(L.Activation('sigmoid'))
+    else:
+        model.add(L.Activation('relu'))
     return model
 
-def create_deconv_block(model, size, last=False):
-    if last:
-        model.add(L.Conv2D(size, (2, 2), strides=1, padding='same', activation='sigmoid'))
-    else:
-        model.add(L.Conv2D(size, (2, 2), strides=1, padding='same', activation='relu'))
-    #model.add(L.UpSampling2D((2, 2)))
-    model.add(L.Conv2DTranspose(size, (2, 2), strides=2, padding='same'))
-    return model
 
 
 def AutoEncoder_256(input_shape = (256,256,3)):
@@ -91,13 +88,21 @@ def AutoEncoder_256(input_shape = (256,256,3)):
 
 def AutoEncoder_128(input_shape = (128, 128, 3)):
     encoder = Sequential()
-    encoder = create_conv_block(encoder, 256, init=True, input_shape=input_shape)
+    encoder = create_conv_block(encoder, 64, init=True, input_shape=input_shape)
+    encoder = create_conv_block(encoder, 64)
+    encoder.add(L.MaxPooling2D((2,2)))
+    encoder = create_conv_block(encoder, 128)
+    encoder = create_conv_block(encoder, 128)
+    encoder.add(L.MaxPooling2D((2,2)))
     encoder = create_conv_block(encoder, 256)
+    encoder = create_conv_block(encoder, 256)
+    encoder.add(L.MaxPooling2D((2,2)))
     encoder = create_conv_block(encoder, 512)
     encoder = create_conv_block(encoder, 512)
+    encoder.add(L.MaxPooling2D((2,2)))
     encoder = create_conv_block(encoder, 1024)
     encoder = create_conv_block(encoder, 1024)
-    encoder = create_conv_block(encoder, 1024)
+    encoder.add(L.MaxPooling2D((2,2)))
     encoder.add(L.Flatten())
 
     unflattened_shape = encoder.get_layer(index=-2).output_shape[1:]
@@ -105,19 +110,29 @@ def AutoEncoder_128(input_shape = (128, 128, 3)):
 
     decoder = Sequential()
     decoder.add(L.Reshape(target_shape=unflattened_shape, input_shape=flattened_shape))
-    decoder = create_deconv_block(decoder, 1024)
-    decoder = create_deconv_block(decoder, 1024)
-    decoder = create_deconv_block(decoder, 512)
-    decoder = create_deconv_block(decoder, 512)
-    decoder = create_deconv_block(decoder, 256)
-    decoder = create_deconv_block(decoder, 256)
-    decoder = create_deconv_block(decoder, 3, last=True)
+    #decoder.add(L.UpSampling2D((2, 2)))
+    decoder.add(L.Conv2DTranspose(1024, (2, 2), strides=2, padding='same'))
+    decoder = create_conv_block(decoder, 1024)
+    decoder = create_conv_block(decoder, 1024)
+    decoder.add(L.Conv2DTranspose(512, (2, 2), strides=2, padding='same'))
+    decoder = create_conv_block(decoder, 512)
+    decoder = create_conv_block(decoder, 512)
+    decoder.add(L.Conv2DTranspose(256, (2, 2), strides=2, padding='same'))
+    decoder = create_conv_block(decoder, 256)
+    decoder = create_conv_block(decoder, 256)
+    decoder.add(L.Conv2DTranspose(128, (2, 2), strides=2, padding='same'))
+    decoder = create_conv_block(decoder, 128)
+    decoder = create_conv_block(decoder, 128)
+    decoder.add(L.Conv2DTranspose(3, (2, 2), strides=2, padding='same'))
+    decoder =create_conv_block(decoder, 3, last=True)
 
     autoencoder = Sequential()
     autoencoder.add(encoder)
     autoencoder.add(decoder)
     return autoencoder
 
+a = AutoEncoder_128()
+print(a.summary())
 
 def AutoEncoder_64(input_shape = (64, 64, 3)):
     encoder = Sequential()
