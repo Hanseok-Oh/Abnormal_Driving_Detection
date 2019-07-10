@@ -10,7 +10,6 @@ def create_conv_block(model, size, init=False, input_shape=None, last=False):
         model.add(L.Conv2D(size, (3, 3), strides=1, padding='same', input_shape=input_shape))
     else:
         model.add(L.Conv2D(size, (3, 3), strides=1, padding='same'))
-    model.add(L.BatchNormalization())
 
     if last:
         model.add(L.Activation('sigmoid'))
