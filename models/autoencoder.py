@@ -7,9 +7,9 @@ import numpy as np
 
 def create_conv_block(model, size, init=False, input_shape=None, last=False):
     if init:
-        model.add(L.Conv2D(size, (2, 2), strides=1, padding='same', input_shape=input_shape))
+        model.add(L.Conv2D(size, (3, 3), strides=1, padding='same', input_shape=input_shape))
     else:
-        model.add(L.Conv2D(size, (2, 2), strides=1, padding='same'))
+        model.add(L.Conv2D(size, (3, 3), strides=1, padding='same'))
     model.add(L.BatchNormalization())
 
     if last:
@@ -90,25 +90,19 @@ def AutoEncoder_128(input_shape = (128, 128, 3)):
     encoder = Sequential()
     encoder = create_conv_block(encoder, 64, init=True, input_shape=input_shape)
     encoder = create_conv_block(encoder, 64)
-    encoder = create_conv_block(encoder, 64)
     encoder.add(L.MaxPooling2D((2,2)))
-    encoder = create_conv_block(encoder, 128)
     encoder = create_conv_block(encoder, 128)
     encoder = create_conv_block(encoder, 128)
     encoder.add(L.MaxPooling2D((2,2)))
     encoder = create_conv_block(encoder, 256)
     encoder = create_conv_block(encoder, 256)
-    encoder = create_conv_block(encoder, 256)
     encoder.add(L.MaxPooling2D((2,2)))
-    encoder = create_conv_block(encoder, 512)
     encoder = create_conv_block(encoder, 512)
     encoder = create_conv_block(encoder, 512)
     encoder.add(L.MaxPooling2D((2,2)))
     encoder = create_conv_block(encoder, 1024)
     encoder = create_conv_block(encoder, 1024)
-    encoder = create_conv_block(encoder, 1024)
     encoder.add(L.MaxPooling2D((2,2)))
-    encoder = create_conv_block(encoder, 1024)
     encoder = create_conv_block(encoder, 1024)
     encoder = create_conv_block(encoder, 1024)
     encoder.add(L.MaxPooling2D((2,2)))
@@ -147,6 +141,9 @@ def AutoEncoder_128(input_shape = (128, 128, 3)):
     autoencoder.add(encoder)
     autoencoder.add(decoder)
     return autoencoder
+
+a = AutoEncoder_128()
+print(a.summary())
 
 
 def AutoEncoder_64(input_shape = (64, 64, 3)):
