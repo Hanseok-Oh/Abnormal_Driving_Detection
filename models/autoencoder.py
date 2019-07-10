@@ -5,21 +5,17 @@ import keras.layers as L
 import keras.backend as K
 import numpy as np
 
-def create_conv_block(model, size, init=False, input_shape=None, last=False):
+def create_conv_block(model, size, init=False, last=False, input_shape=None):
     if init:
-        model.add(L.Conv2D(size, (3, 3), strides=1, padding='same', kernel_initializer='he_uniform' ,input_shape=input_shape))
+        model.add(L.Conv2D(size, (3, 3), strides=1, padding='same', kernel_initializer='he_uniform', activation='relu', input_shape=input_shape))
+    elif last:
+        model.add(L.Conv2D(size, (3, 3), strides=1, padding='same', kernel_initializer='he_uniform', activation='sigmoid'))
     else:
-        model.add(L.Conv2D(size, (3, 3), strides=1, padding='same', kernel_initializer='he_uniform'))
-
-    if last:
-        model.add(L.Activation('sigmoid'))
-    else:
-        model.add(L.Activation('relu'))
+        model.add(L.Conv2D(size, (3, 3), strides=1, padding='same', kernel_initializer='he_uniform', activation='relu'))
     return model
 
 
-
-def AutoEncoder(init_kernel_size=64, depth=5, input_shape = (128, 128, 3)):
+def AutoEncoder(init_kernel_size=32, depth=5, input_shape = (128, 128, 3)):
     encoder = Sequential(name='encoder')
 
     for i in range(depth):
@@ -29,10 +25,10 @@ def AutoEncoder(init_kernel_size=64, depth=5, input_shape = (128, 128, 3)):
         else:
             encoder = create_conv_block(encoder, kernel_size)
         encoder = create_conv_block(encoder, kernel_size)
+        encoder = create_conv_block(encoder, kernel_size)
         encoder.add(L.Conv2D(kernel_size, (3,3), strides=2, padding='same', kernel_initializer='he_uniform')) # strided conv
 
     encoder.add(L.Flatten())
-
     unflattened_shape = encoder.get_layer(index=-2).output_shape[1:]
     flattened_shape = encoder.get_layer(index=-1).output_shape[1:]
 
@@ -43,6 +39,7 @@ def AutoEncoder(init_kernel_size=64, depth=5, input_shape = (128, 128, 3)):
         kernel_size = init_kernel_size * (2 ** i)
         decoder.add(L.Conv2DTranspose(kernel_size, (2, 2), strides=2, padding='same', kernel_initializer='he_uniform')) # upsampling
         decoder = create_conv_block(decoder, kernel_size)
+        decoder = create_conv_block(decoder, kernel_size)
 
         if i == 0:
             decoder = create_conv_block(decoder, 3, last=True)
@@ -51,7 +48,6 @@ def AutoEncoder(init_kernel_size=64, depth=5, input_shape = (128, 128, 3)):
     autoencoder.add(encoder)
     autoencoder.add(decoder)
     return autoencoder
-
 
 def VAE(optimizer, latent_dim=512):
     encoder_input = L.Input(shape=(256, 256, 3), name='encoder_input')
