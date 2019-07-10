@@ -84,8 +84,3 @@ def idx_to_array(idx, video_path):
     im = Image.open(img_path)
     arr = np.array(im)
     return arr
-
-
-a = DataLoader('C:/users/yoon/downloads/UCSD/UCSDped1/Train/')
-ae = a.autoencoder_loader()
-print(next(ae))
