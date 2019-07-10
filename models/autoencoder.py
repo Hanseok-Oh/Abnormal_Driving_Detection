@@ -52,8 +52,6 @@ def AutoEncoder(init_kernel_size=64, depth=5, input_shape = (128, 128, 3)):
     autoencoder.add(decoder)
     return autoencoder
 
-a = AutoEncoder()
-print(a.get_layer('encoder').summary())
 
 def VAE(optimizer, latent_dim=512):
     encoder_input = L.Input(shape=(256, 256, 3), name='encoder_input')
