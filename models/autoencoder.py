@@ -29,8 +29,7 @@ def AutoEncoder(init_kernel_size=64, depth=5, input_shape = (128, 128, 3)):
         else:
             encoder = create_conv_block(encoder, kernel_size)
         encoder = create_conv_block(encoder, kernel_size)
-        #encoder.add(L.MaxPooling2D((2,2)))
-        encoder.add(L.Conv2D(kernel_size, (3,3), strides=2, padding='same')) # strided conv
+        encoder.add(L.Conv2D(kernel_size, (2,2), strides=2, padding='same')) # strided conv
 
     encoder.add(L.Flatten())
 
@@ -42,7 +41,6 @@ def AutoEncoder(init_kernel_size=64, depth=5, input_shape = (128, 128, 3)):
 
     for i in reversed(range(depth)):
         kernel_size = init_kernel_size * (2 ** i)
-        #decoder.add(L.UpSampling2D((2, 2)))
         decoder.add(L.Conv2DTranspose(kernel_size, (2, 2), strides=2, padding='same')) # upsampling
         decoder = create_conv_block(decoder, kernel_size)
 
@@ -54,7 +52,8 @@ def AutoEncoder(init_kernel_size=64, depth=5, input_shape = (128, 128, 3)):
     autoencoder.add(decoder)
     return autoencoder
 
-
+a = AutoEncoder()
+print(a.get_layer('encoder').summary())
 def VAE(optimizer, latent_dim=512):
     encoder_input = L.Input(shape=(256, 256, 3), name='encoder_input')
     en = L.Conv2D(64, (3, 3), padding='same')(encoder_input)
