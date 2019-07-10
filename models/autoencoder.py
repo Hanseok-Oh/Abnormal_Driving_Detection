@@ -118,7 +118,7 @@ def AutoEncoder_128(input_shape = (128, 128, 3)):
     #decoder.add(L.UpSampling2D((2, 2)))
     decoder.add(L.Conv2DTranspose(2048, (2, 2), strides=2, padding='same'))
     decoder = create_conv_block(decoder, 2048)
-    decoder = create_conv_block(decoder, 2048)    
+    decoder = create_conv_block(decoder, 2048)
     decoder.add(L.Conv2DTranspose(1024, (2, 2), strides=2, padding='same'))
     decoder = create_conv_block(decoder, 1024)
     decoder = create_conv_block(decoder, 1024)
@@ -142,8 +142,6 @@ def AutoEncoder_128(input_shape = (128, 128, 3)):
     autoencoder.add(decoder)
     return autoencoder
 
-a = AutoEncoder_128()
-print(a.summary())
 
 def AutoEncoder_64(input_shape = (64, 64, 3)):
     encoder = Sequential()
