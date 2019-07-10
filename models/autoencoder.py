@@ -19,179 +19,41 @@ def create_conv_block(model, size, init=False, input_shape=None, last=False):
 
 
 
-def AutoEncoder_256(input_shape = (256,256,3)):
-    encoder = Sequential()
-    encoder.add(L.Conv2D(64, (3, 3), strides=2, padding='same', input_shape=input_shape))
-    encoder.add(L.Activation('relu'))
-    encoder.add(L.MaxPooling2D((2,2)))
-    encoder.add(L.Conv2D(128, (3, 3), strides=2, padding='same'))
-    encoder.add(L.Activation('relu'))
-    encoder.add(L.MaxPooling2D((2,2)))
-    encoder.add(L.Conv2D(256, (3, 3), strides=2, padding='same'))
-    encoder.add(L.Activation('relu'))
-    encoder.add(L.MaxPooling2D((2,2)))
-    encoder.add(L.Conv2D(512, (3, 3), strides=2, padding='same'))
-    encoder.add(L.Activation('relu'))
-    encoder.add(L.MaxPooling2D((2,2)))
-    encoder.add(L.Conv2D(1024, (3, 3), strides=2, padding='same'))
-    encoder.add(L.Activation('relu', name='unflattened'))
-    encoder.add(L.Flatten(name='flattened'))
+def AutoEncoder(init_kernel_size=64, depth=5, input_shape = (128, 128, 3)):
+    encoder = Sequential(name='encoder')
 
-    unflattened_shape = encoder.get_layer('unflattened').output_shape[1:]
-    flattened_shape = encoder.get_layer('flattened').output_shape[1:]
+    for i in range(depth):
+        kernel_size = init_kernel_size * (2 ** i)
+        if i == 0:
+            encoder = create_conv_block(encoder, kernel_size, init=True, input_shape=input_shape)
+        else:
+            encoder = create_conv_block(encoder, kernel_size)
+        encoder = create_conv_block(encoder, kernel_size)
+        #encoder.add(L.MaxPooling2D((2,2)))
+        encoder.add(L.Conv2D(kernel_size, (3,3), strides=2, padding='same')) # strided conv
 
-    decoder = Sequential()
-    decoder.add(L.Reshape(target_shape=unflattened_shape, input_shape=flattened_shape))
-    decoder.add(L.Conv2DTranspose(512, (2, 2), strides=2, padding='same'))
-    decoder.add(L.Activation('relu'))
-    decoder.add(L.Conv2D(512, (3, 3), strides=1, padding='same'))
-    decoder.add(L.Activation('relu'))
-    decoder.add(L.Conv2DTranspose(256, (2, 2), strides=2, padding='same'))
-    decoder.add(L.Activation('relu'))
-    decoder.add(L.Conv2D(256, (3, 3), strides=1, padding='same'))
-    decoder.add(L.Activation('relu'))
-    decoder.add(L.Conv2DTranspose(128, (2, 2), strides=2, padding='same'))
-    decoder.add(L.Activation('relu'))
-    decoder.add(L.Conv2D(128, (3, 3), strides=1, padding='same'))
-    decoder.add(L.Activation('relu'))
-    decoder.add(L.Conv2DTranspose(64, (2, 2), strides=2, padding='same'))
-    decoder.add(L.Activation('relu'))
-    decoder.add(L.Conv2D(64, (3, 3), strides=1, padding='same'))
-    decoder.add(L.Activation('relu'))
-    decoder.add(L.Conv2DTranspose(32, (2, 2), strides=2, padding='same'))
-    decoder.add(L.Activation('relu'))
-    decoder.add(L.Conv2D(32, (3, 3), strides=1, padding='same'))
-    decoder.add(L.Activation('relu'))
-    decoder.add(L.Conv2DTranspose(16, (2, 2), strides=2, padding='same'))
-    decoder.add(L.Activation('relu'))
-    decoder.add(L.Conv2D(16, (3, 3), strides=1, padding='same'))
-    decoder.add(L.Activation('relu'))
-    decoder.add(L.Conv2DTranspose(8, (2, 2), strides=2, padding='same'))
-    decoder.add(L.Activation('relu'))
-    decoder.add(L.Conv2D(8, (3, 3), strides=1, padding='same'))
-    decoder.add(L.Activation('relu'))
-    decoder.add(L.Conv2DTranspose(4, (2, 2), strides=1, padding='same'))
-    decoder.add(L.Activation('relu'))
-    decoder.add(L.Conv2D(4, (3, 3), strides=1, padding='same'))
-    decoder.add(L.Activation('relu'))
-    decoder.add(L.Conv2DTranspose(3, (2, 2), strides=2, padding='same'))
-    decoder.add(L.Activation('relu'))
-    decoder.add(L.Conv2D(3, (3, 3), strides=1, padding='same'))
-    decoder.add(L.Activation('sigmoid'))
-
-    autoencoder = Sequential()
-    autoencoder.add(encoder)
-    autoencoder.add(decoder)
-    return autoencoder
-
-
-def AutoEncoder_128(input_shape = (128, 128, 3)):
-    encoder = Sequential()
-    encoder = create_conv_block(encoder, 64, init=True, input_shape=input_shape)
-    encoder = create_conv_block(encoder, 64)
-    encoder.add(L.MaxPooling2D((2,2)))
-    encoder = create_conv_block(encoder, 128)
-    encoder = create_conv_block(encoder, 128)
-    encoder.add(L.MaxPooling2D((2,2)))
-    encoder = create_conv_block(encoder, 256)
-    encoder = create_conv_block(encoder, 256)
-    encoder.add(L.MaxPooling2D((2,2)))
-    encoder = create_conv_block(encoder, 512)
-    encoder = create_conv_block(encoder, 512)
-    encoder.add(L.MaxPooling2D((2,2)))
-    encoder = create_conv_block(encoder, 1024)
-    encoder = create_conv_block(encoder, 1024)
-    encoder.add(L.MaxPooling2D((2,2)))
-    encoder = create_conv_block(encoder, 1024)
-    encoder = create_conv_block(encoder, 1024)
-    encoder.add(L.MaxPooling2D((2,2)))
-    encoder = create_conv_block(encoder, 2048)
-    encoder = create_conv_block(encoder, 2048)
-    encoder.add(L.MaxPooling2D((2,2)))
     encoder.add(L.Flatten())
 
     unflattened_shape = encoder.get_layer(index=-2).output_shape[1:]
     flattened_shape = encoder.get_layer(index=-1).output_shape[1:]
 
-    decoder = Sequential()
+    decoder = Sequential(name='decoder')
     decoder.add(L.Reshape(target_shape=unflattened_shape, input_shape=flattened_shape))
-    #decoder.add(L.UpSampling2D((2, 2)))
-    decoder.add(L.Conv2DTranspose(2048, (2, 2), strides=2, padding='same'))
-    decoder = create_conv_block(decoder, 2048)
-    decoder = create_conv_block(decoder, 2048)
-    decoder.add(L.Conv2DTranspose(1024, (2, 2), strides=2, padding='same'))
-    decoder = create_conv_block(decoder, 1024)
-    decoder = create_conv_block(decoder, 1024)
-    decoder.add(L.Conv2DTranspose(1024, (2, 2), strides=2, padding='same'))
-    decoder = create_conv_block(decoder, 1024)
-    decoder = create_conv_block(decoder, 1024)
-    decoder.add(L.Conv2DTranspose(512, (2, 2), strides=2, padding='same'))
-    decoder = create_conv_block(decoder, 512)
-    decoder = create_conv_block(decoder, 512)
-    decoder.add(L.Conv2DTranspose(256, (2, 2), strides=2, padding='same'))
-    decoder = create_conv_block(decoder, 256)
-    decoder = create_conv_block(decoder, 256)
-    decoder.add(L.Conv2DTranspose(128, (2, 2), strides=2, padding='same'))
-    decoder = create_conv_block(decoder, 128)
-    decoder = create_conv_block(decoder, 128)
-    decoder.add(L.Conv2DTranspose(3, (2, 2), strides=2, padding='same'))
-    decoder =create_conv_block(decoder, 3, last=True)
+
+    for i in reversed(range(depth)):
+        kernel_size = init_kernel_size * (2 ** i)
+        #decoder.add(L.UpSampling2D((2, 2)))
+        decoder.add(L.Conv2DTranspose(kernel_size, (2, 2), strides=2, padding='same')) # upsampling
+        decoder = create_conv_block(decoder, kernel_size)
+
+        if i == 0:
+            decoder = create_conv_block(decoder, 3, last=True)
 
     autoencoder = Sequential()
     autoencoder.add(encoder)
     autoencoder.add(decoder)
     return autoencoder
 
-
-def AutoEncoder_64(input_shape = (64, 64, 3)):
-    encoder = Sequential()
-    encoder.add(L.Conv2D(64, (3, 3), strides=2, padding='same', input_shape=input_shape))
-    encoder.add(L.Activation('relu'))
-    encoder.add(L.MaxPooling2D((2,2)))
-    encoder.add(L.Conv2D(128, (3, 3), strides=2, padding='same'))
-    encoder.add(L.Activation('relu'))
-    encoder.add(L.MaxPooling2D((2,2)))
-    encoder.add(L.Conv2D(256, (3, 3), strides=2, padding='same'))
-    encoder.add(L.Activation('relu'))
-    encoder.add(L.MaxPooling2D((2,2)))
-    encoder.add(L.Conv2D(512, (3, 3), strides=2, padding='same'))
-    encoder.add(L.Activation('relu', name='unflattened'))
-    encoder.add(L.Flatten(name='flattened'))
-
-    unflattened_shape = encoder.get_layer('unflattened').output_shape[1:]
-    flattened_shape = encoder.get_layer('flattened').output_shape[1:]
-
-    decoder = Sequential()
-    decoder.add(L.Reshape(target_shape=unflattened_shape, input_shape=flattened_shape))
-    decoder.add(L.Conv2DTranspose(512, (2, 2), strides=2, padding='same'))
-    decoder.add(L.Activation('relu'))
-    decoder.add(L.Conv2D(512, (2, 2), strides=1, padding='same'))
-    decoder.add(L.Activation('relu'))
-    decoder.add(L.Conv2DTranspose(256, (2, 2), strides=2, padding='same'))
-    decoder.add(L.Activation('relu'))
-    decoder.add(L.Conv2D(256, (2, 2), strides=1, padding='same'))
-    decoder.add(L.Activation('relu'))
-    decoder.add(L.Conv2DTranspose(128, (2, 2), strides=2, padding='same'))
-    decoder.add(L.Activation('relu'))
-    decoder.add(L.Conv2D(128, (2, 2), strides=1, padding='same'))
-    decoder.add(L.Activation('relu'))
-    decoder.add(L.Conv2DTranspose(64, (2, 2), strides=2, padding='same'))
-    decoder.add(L.Activation('relu'))
-    decoder.add(L.Conv2D(64, (2, 2), strides=1, padding='same'))
-    decoder.add(L.Activation('relu'))
-    decoder.add(L.Conv2DTranspose(32, (2, 2), strides=2, padding='same'))
-    decoder.add(L.Activation('relu'))
-    decoder.add(L.Conv2D(32, (2, 2), strides=1, padding='same'))
-    decoder.add(L.Activation('relu'))
-    decoder.add(L.Conv2DTranspose(3, (2, 2), strides=2, padding='same'))
-    decoder.add(L.Activation('relu'))
-    decoder.add(L.Conv2D(3, (2, 2), strides=1, padding='same'))
-    decoder.add(L.Activation('sigmoid'))
-
-    autoencoder = Sequential()
-    autoencoder.add(encoder)
-    autoencoder.add(decoder)
-    return autoencoder
 
 def VAE(optimizer, latent_dim=512):
     encoder_input = L.Input(shape=(256, 256, 3), name='encoder_input')
