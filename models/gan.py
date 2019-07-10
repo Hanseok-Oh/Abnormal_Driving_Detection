@@ -7,7 +7,7 @@ import numpy as np
 
 class GAN:
     def __init__(self, autoencoder):
-        self.input_shape = (256, 256, 3)
+        self.input_shape = (autoencoder.input_shape)
         self.G = self.generator(autoencoder)
         self.D = self.discriminator()
         self.AM = self.adversarial()
@@ -20,18 +20,18 @@ class GAN:
 
     def discriminator(self):
         d = Sequential()
-        d.add(L.Conv2D(64, (5, 5), strides=2, padding='same', input_shape=self.input_shape))
+        d.add(L.Conv2D(64, (3, 3), strides=2, padding='same', input_shape=self.input_shape))
         d.add(L.LeakyReLU(0.2))
-        d.add(L.Conv2D(128, (5, 5), strides=2, padding='same'))
+        d.add(L.Conv2D(128, (3, 3), strides=2, padding='same'))
         d.add(L.LeakyReLU(0.2))
-        d.add(L.Conv2D(256, (5, 5), strides=2, padding='same'))
+        d.add(L.Conv2D(256, (3, 3), strides=2, padding='same'))
         d.add(L.LeakyReLU(0.2))
-        d.add(L.Conv2D(512, (5, 5), strides=2, padding='same'))
+        d.add(L.Conv2D(512, (3, 3), strides=2, padding='same'))
         d.add(L.LeakyReLU(0.2))
         d.add(L.Flatten())
-        d.add(L.Dense(128))
-        d.add(L.Dense(1))
-        d.add(L.Activation('sigmoid'))
+        d.add(L.Dense(128), activation='relu')
+        d.add(L.Dense(64), activation='relu')
+        d.add(L.Dense(1), activation='sigmoid')
         d.compile(loss='binary_crossentropy', optimizer=keras.optimizers.Adam(lr=1e-4))
         d.summary()
         return d
