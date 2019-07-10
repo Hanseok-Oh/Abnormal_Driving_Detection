@@ -12,7 +12,6 @@ class DataLoader:
         self.batch_size = batch_size
         self.batch_per_video = batch_per_video
 
-
     def autoencoder_loader(self):
         while True:
             selected_video = self._choose_random_video()
@@ -80,13 +79,13 @@ class DataLoader:
         return selected_frame_x, selected_frame_y
 
 
-def img_to_array(img):
-    im = Image.open(img)
-    arr = np.array(im)
-    return arr
-
 def idx_to_array(idx, video_path):
     img_path = os.path.join(video_path, '{}.png'.format(idx))
     im = Image.open(img_path)
     arr = np.array(im)
     return arr
+
+
+a = DataLoader('C:/users/yoon/downloads/UCSD/UCSDped1/Train/')
+ae = a.autoencoder_loader()
+print(next(ae))

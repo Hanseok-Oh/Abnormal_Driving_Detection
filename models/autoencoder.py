@@ -142,9 +142,6 @@ def AutoEncoder_128(input_shape = (128, 128, 3)):
     autoencoder.add(decoder)
     return autoencoder
 
-a = AutoEncoder_128()
-print(a.summary())
-
 
 def AutoEncoder_64(input_shape = (64, 64, 3)):
     encoder = Sequential()
