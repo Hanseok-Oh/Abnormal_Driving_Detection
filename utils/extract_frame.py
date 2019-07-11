@@ -9,7 +9,7 @@ from PIL import Image
 parser = argparse.ArgumentParser()
 parser.add_argument('--load_path', help='동영상 로드 경로', type=str)
 parser.add_argument('--save_path', help='이미지 저장 경로', type=str)
-parser.add_argument('--size', help='이미지 저장 사이즈', type=int, default=128)
+parser.add_argument('--size', help='이미지 저장 사이즈', type=int, default=256)
 parser.add_argument('--split_ratio', help='train split ratio', type=float, default=0.7)
 args = parser.parse_args()
 
@@ -23,18 +23,18 @@ def make_dir(save_path):
 
     if not os.path.isdir(save_path):
         os.mkdir(save_path)
-    if not os.path.isdir(os.path.join(save_path, 'train')):
-        os.mkdir(os.path.join(save_path, 'train'))
-    if not os.path.isdir(os.path.join(save_path, 'test')):
-        os.mkdir(os.path.join(save_path, 'test'))
+    if not os.path.isdir(os.path.join(save_path, 'Train')):
+        os.mkdir(os.path.join(save_path, 'Train'))
+    if not os.path.isdir(os.path.join(save_path, 'Validation')):
+        os.mkdir(os.path.join(save_path, 'Validation'))
 
 def get_video_frame(video, load_path, save_path, split_ratio):
     save_path = os.path.abspath(save_path)
 
     if np.random.rand() < split_ratio:
-        video_save_path = os.path.join(save_path, 'train', video[:-4])
+        video_save_path = os.path.join(save_path, 'Train', video[:-4])
     else:
-        video_save_path = os.path.join(save_path, 'test', video[:-4])
+        video_save_path = os.path.join(save_path, 'Validation', video[:-4])
 
     video_save_path = os.path.abspath(video_save_path)
 

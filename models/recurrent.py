@@ -1,15 +1,15 @@
 from keras.models import Model
 import keras.layers as L
 
-def RNN(autoencoder, offset_x, rnn_dim, autoencoder_trainable=False):
+def RNN(autoencoder, offset_x, rnn_dim, autoencoder_trainable=False, input_size=(256,256,1)):
     encoder = autoencoder.get_layer('encoder')
     decoder = autoencoder.get_layer('decoder')
     encoder.trainable = autoencoder_trainable
     decoder.trainable = autoencoder_trainable
 
-    input1 = L.Input((256,256,3))
-    input2 = L.Input((256,256,3))
-    input3 = L.Input((256,256,3))
+    input1 = L.Input(input_size)
+    input2 = L.Input(input_size)
+    input3 = L.Input(input_size)
 
     encoded1 = encoder(input1)
     encoded2 = encoder(input2)
