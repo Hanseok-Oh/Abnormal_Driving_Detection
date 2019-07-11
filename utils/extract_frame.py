@@ -9,8 +9,7 @@ from PIL import Image
 parser = argparse.ArgumentParser()
 parser.add_argument('--load_path', help='동영상 로드 경로', type=str)
 parser.add_argument('--save_path', help='이미지 저장 경로', type=str)
-parser.add_argument('--size', help='이미지 저장 사이즈', type=int, default=256)
-parser.add_argument('--split_ratio', help='train split ratio', type=float, default=0.7)
+parser.add_argument('--size', help='이미지 저장 사이즈', type=int, default=128)
 args = parser.parse_args()
 
 
@@ -20,22 +19,13 @@ def get_video_list(load_path):
 
 def make_dir(save_path):
     save_path = os.path.abspath(save_path)
-
     if not os.path.isdir(save_path):
         os.mkdir(save_path)
-    if not os.path.isdir(os.path.join(save_path, 'Train')):
-        os.mkdir(os.path.join(save_path, 'Train'))
-    if not os.path.isdir(os.path.join(save_path, 'Validation')):
-        os.mkdir(os.path.join(save_path, 'Validation'))
 
-def get_video_frame(video, load_path, save_path, split_ratio):
+
+def get_video_frame(video, load_path, save_path):
     save_path = os.path.abspath(save_path)
-
-    if np.random.rand() < split_ratio:
-        video_save_path = os.path.join(save_path, 'Train', video[:-4])
-    else:
-        video_save_path = os.path.join(save_path, 'Validation', video[:-4])
-
+    video_save_path = os.path.join(save_path, video[:-4])
     video_save_path = os.path.abspath(video_save_path)
 
     if not os.path.isdir(video_save_path):
@@ -47,6 +37,7 @@ def get_video_frame(video, load_path, save_path, split_ratio):
     for i in range(frame_len):
         ret, frame = cap.read()
         frame = cv2.resize(frame, dsize=(args.size, args.size), interpolation=cv2.INTER_LINEAR)
+        frame= cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         os.chdir(video_save_path)
         cv2.imwrite('{}.png'.format(i), frame)
     cap.release()
@@ -58,7 +49,7 @@ def main(args):
     i = 0
     for video in video_list:
         i += 1
-        get_video_frame(video, args.load_path, args.save_path, args.split_ratio)
+        get_video_frame(video, args.load_path, args.save_path)
 
         if i % 100 == 0:
             print('{}% 완료'.format(int((i / len(video_list)) * 100)))
