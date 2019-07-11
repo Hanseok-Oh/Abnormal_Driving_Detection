@@ -1,7 +1,7 @@
 from keras.models import Model
 import keras.layers as L
 
-def RNN(autoencoder, offset_x, rnn_dim, autoencoder_trainable=False, input_size=(256,256,1)):
+def RNN(autoencoder, offset_x, rnn_dim, autoencoder_trainable=True, input_size=(256,256,1)):
     encoder = autoencoder.get_layer('encoder')
     decoder = autoencoder.get_layer('decoder')
     encoder.trainable = autoencoder_trainable
