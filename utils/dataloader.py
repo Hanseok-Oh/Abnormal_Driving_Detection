@@ -14,10 +14,8 @@ class DataLoader:
 
     def specific_loader(self, video, offset_x, offset_y):
         X, Y = self._choose_total_frame(video, offset_x, offset_y)
-        X = np.array(X)
-        X = X.astype('float32') / 255
-        Y = np.array(Y)
-        Y = Y.astype('float32') / 255
+        X = convert_array(X)
+        Y = convert_array(Y)
         return X, Y
 
     def random_loader(self, offset_x, offset_y):
@@ -35,10 +33,9 @@ class DataLoader:
                     X = np.concatenate((X, frame_x))
                     Y = np.concatenate((Y, frame_y))
 
-            X = X.astype('float32') / 255
-            Y = Y.astype('float32') / 255
-            yield ([X[:,i,:,:,:] for i in range(offset_x)], Y)
-
+            X = convert_array(X)
+            Y = convert_array(Y)
+            yield (X, Y)
 
     def _choose_random_video(self):
         video_list = os.listdir(self.directory)
@@ -52,7 +49,7 @@ class DataLoader:
         frame_list = os.listdir(video_path)
 
         selected_index_y = np.random.randint(offset_y, len(frame_list), self.batch_per_video)
-        selected_index_x = [[y - offset_y + x for x in range(offset_xs)] for y in selected_index_y]
+        selected_index_x = [[y - offset_y + x for x in range(offset_x)] for y in selected_index_y]
         selected_frame_y = np.array([idx_to_array(i, video_path) for i in selected_index_y])
         selected_frame_x = [[idx_to_array(i, video_path) for i in l] for l in selected_index_x]
         return selected_frame_x, selected_frame_y
@@ -74,7 +71,9 @@ def idx_to_array(idx, video_path):
     arr = np.array(im)
     return arr
 
-a = DataLoader('C:/users/yoon/desktop/ex')
-x, y = a.specific_loader('ex1', 3, 10)
-print(x.shape)
-print(y.shape)
+def convert_array(arr):
+    arr = np.array(arr)
+    arr = np.expand_dims(arr, -1)
+    arr = arr.astype('float32')
+    arr /= 255
+    return arr
