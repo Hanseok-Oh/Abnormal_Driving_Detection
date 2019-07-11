@@ -42,7 +42,7 @@ def AutoEncoder(init_kernel_size=32, depth=5, input_shape = (128, 128, 3)):
         decoder = create_conv_block(decoder, kernel_size)
 
         if i == 0:
-            decoder = create_conv_block(decoder, 3, last=True)
+            decoder = create_conv_block(decoder, input_shape[2], last=True)
 
     autoencoder = Sequential()
     autoencoder.add(encoder)
