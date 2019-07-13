@@ -9,7 +9,7 @@ from PIL import Image
 parser = argparse.ArgumentParser()
 parser.add_argument('--load_path', help='동영상 로드 경로', type=str)
 parser.add_argument('--save_path', help='이미지 저장 경로', type=str)
-parser.add_argument('--size', help='이미지 저장 사이즈', type=int, default=128)
+parser.add_argument('--size', help='이미지 저장 사이즈', type=int, default=256)
 args = parser.parse_args()
 
 
