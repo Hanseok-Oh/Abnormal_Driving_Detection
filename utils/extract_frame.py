@@ -2,6 +2,7 @@ import os
 import cv2
 import argparse
 import numpy as np
+from tqdm import tqdm
 from PIL import Image
 
 
@@ -16,6 +17,7 @@ args = parser.parse_args()
 def get_video_list(load_path):
     video_list = os.listdir(load_path)
     return video_list
+
 
 def make_dir(save_path):
     save_path = os.path.abspath(save_path)
@@ -42,18 +44,17 @@ def get_video_frame(video, load_path, save_path):
         cv2.imwrite('{}.png'.format(i), frame)
     cap.release()
 
+
 def main(args):
     video_list = get_video_list(args.load_path)
     make_dir(args.save_path)
 
-    i = 0
-    for video in video_list:
-        i += 1
+    for i in tqdm(range(len(video_list)), mininterval=1):
+        video = video_list[i]
         get_video_frame(video, args.load_path, args.save_path)
 
-        if i % 100 == 0:
-            print('{}% 완료'.format(int((i / len(video_list)) * 100)))
     print('전체 완료')
+
 
 if __name__ == '__main__':
     main(args)

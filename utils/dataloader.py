@@ -11,7 +11,8 @@ class DataLoader:
         self.directory = directory
         self.batch_size = batch_size
         self.batch_per_video = batch_per_video
-
+        self.vidoe_list = os.listdir(directory)
+        
     def specific_loader(self, video, offset_x, offset_y):
         X, Y = self._choose_total_frame(video, offset_x, offset_y)
         X = convert_array(X)
