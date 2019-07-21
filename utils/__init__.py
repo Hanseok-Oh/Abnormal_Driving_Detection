@@ -1,5 +1,6 @@
 import keras
 import tensorflow as tf
+import scipy.stats as sp
 from .dataloader import *
 
 
@@ -21,3 +22,16 @@ def load_model(load_path):
     loaded_model = keras.models.model_from_json(loaded_model_json)
     loaded_model.load_weights('{}.h5'.format(load_path))
     return loaded_model
+
+
+def make_video(video_name, pred):
+    video = cv2.VideoWriter('{}.avi'.format(video_name), 0, 12, (256, 256), False)
+
+    for i in range(len(pred)):
+        frame = pred[i][:,:,0] * 255
+        frame = np.uint8(frame)
+        video.write(frame)
+
+    cv2.destroyAllWindows()
+    video.release()
+    print('저장 완료')
