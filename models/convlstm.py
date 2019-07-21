@@ -20,6 +20,3 @@ def ConvLSTM():
 
     model = Model(inputs, x)
     return model
-
-model = ConvLSTM()
-print(model.summary())
