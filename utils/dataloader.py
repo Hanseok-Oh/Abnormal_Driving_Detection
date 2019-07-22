@@ -12,7 +12,7 @@ class DataLoader:
         self.batch_size = batch_size
         self.batch_per_video = batch_per_video
         self.vidoe_list = os.listdir(directory)
-        
+
     def specific_loader(self, video, offset_x, offset_y):
         X, Y = self._choose_total_frame(video, offset_x, offset_y)
         X = convert_array(X)
@@ -50,7 +50,8 @@ class DataLoader:
         frame_list = os.listdir(video_path)
 
         selected_index_y = np.random.randint(offset_y, len(frame_list), self.batch_per_video)
-        selected_index_x = [[y - offset_y + x for x in range(offset_x)] for y in selected_index_y]
+        selected_index_x = [[y - offset_y + x for x in offset_x] for y in selected_index_y]
+        print(selected_index_y, selected_index_x)
         selected_frame_y = np.array([idx_to_array(i, video_path) for i in selected_index_y])
         selected_frame_x = [[idx_to_array(i, video_path) for i in l] for l in selected_index_x]
         return selected_frame_x, selected_frame_y
@@ -60,7 +61,7 @@ class DataLoader:
         frame_list = os.listdir(video_path)
 
         selected_index_y = range(offset_y, len(frame_list))
-        selected_index_x = [[y - offset_y + x for x in range(offset_x)] for y in selected_index_y]
+        selected_index_x = [[y - offset_y + x for x in offset_x] for y in selected_index_y]
         selected_frame_y = np.array([idx_to_array(i, video_path) for i in selected_index_y])
         selected_frame_x = [[idx_to_array(i, video_path) for i in l] for l in selected_index_x]
         return selected_frame_x, selected_frame_y
