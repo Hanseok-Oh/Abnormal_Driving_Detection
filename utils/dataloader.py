@@ -51,7 +51,6 @@ class DataLoader:
 
         selected_index_y = np.random.randint(offset_y, len(frame_list), self.batch_per_video)
         selected_index_x = [[y - offset_y + x for x in offset_x] for y in selected_index_y]
-        print(selected_index_y, selected_index_x)
         selected_frame_y = np.array([idx_to_array(i, video_path) for i in selected_index_y])
         selected_frame_x = [[idx_to_array(i, video_path) for i in l] for l in selected_index_x]
         return selected_frame_x, selected_frame_y
