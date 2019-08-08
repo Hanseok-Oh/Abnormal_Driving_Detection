@@ -34,7 +34,6 @@ class DataLoader:
         for x in zip(*idx_x):
             temp_x= np.array([self._load_frame(frames[i]) for i in x])
             frame_x.append(temp_x)
-        frame_x = np.array(frame_x)
         return frame_x, frame_y
 
     def random_batches(self):
