@@ -46,4 +46,5 @@ class DataLoader:
                 else:
                     batch_x = np.concatenate((batch_x, x), axis=1)
                     batch_y = np.concatenate((batch_y, y), axis=0)
+            batch_x = list(batch_x)
             yield batch_x, batch_y
