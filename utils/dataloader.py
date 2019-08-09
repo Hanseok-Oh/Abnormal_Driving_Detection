@@ -24,18 +24,16 @@ class DataLoader:
     def _random_frames(self):
         video_idx = np.random.randint(low=0, high=len(self.videos))
         video = self.videos[video_idx]
-        frames = [os.path.join(video, i) for i in os.listdir(video) if not 'fgbg' in i]
-        frames_fgbg = [os.path.join(video, i) for i in os.listdir(video) if 'fgbg' in i]
+        frames = [os.path.join(video, '{}.png'.format(i)) for i in range(len(os.listdir(video)))]
+        frames_fgbg = [os.path.join(video, '{}_fgbg.png'.format(i)) for i in range(len(os.listdir(video)))]
 
         idx_y = np.random.randint(self.offset_y, len(frames), self.batch_per_video)
         idx_x = [[y - self.offset_y + x for x in self.offset_x] for y in idx_y]
-        print(idx_y, idx_x)
 
         frame_y = np.array([self._load_frame(frames[i]) for i in idx_y])
         frame_fgbg = np.array([self._load_frame(frames_fgbg[i]) for i in idx_y])
         frame_x = []
         for x in zip(*idx_x):
-            print(x)
             temp_x= np.array([self._load_frame(frames[i]) for i in x])
             frame_x.append(temp_x)
         return frame_x, frame_y, frame_fgbg
@@ -49,7 +47,7 @@ class DataLoader:
                     batch_y = y
                     batch_fgbg = fgbg
                 else:
-                    #batch_x = np.concatenate((batch_x, x), axis=1)
+                    batch_x = np.concatenate((batch_x, x), axis=1)
                     batch_y = np.concatenate((batch_y, y), axis=0)
                     batch_fgbg = np.concatenate((batch_fgbg, fgbg), axis=0)
 
