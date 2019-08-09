@@ -29,6 +29,7 @@ class DataLoader:
 
         idx_y = np.random.randint(self.offset_y, len(frames), self.batch_per_video)
         idx_x = [[y - self.offset_y + x for x in self.offset_x] for y in idx_y]
+        print(idx_y, idx_x)
 
         frame_y = np.array([self._load_frame(frames[i]) for i in idx_y])
         frame_fgbg = np.array([self._load_frame(frames_fgbg[i]) for i in idx_y])
