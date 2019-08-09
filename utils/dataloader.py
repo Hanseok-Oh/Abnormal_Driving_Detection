@@ -21,30 +21,39 @@ class DataLoader:
         arr /= 255
         return arr
 
+    def _load_fgbg(self, frame_path):
+        frame_path = frame_path.replace('.', '_fgbg.')
+        frame = Image.open(frame_path)
+
     def _random_frames(self):
         video_idx = np.random.randint(low=0, high=len(self.videos))
         video = self.videos[video_idx]
         frames = [os.path.join(video, i) for i in os.listdir(video)]
+        frames_fgbg = [i.replace('.png', '_fgbg.png') for i in frames]
 
         idx_y = np.random.randint(self.offset_y, len(frames), self.batch_per_video)
         idx_x = [[y - self.offset_y + x for x in self.offset_x] for y in idx_y]
 
         frame_y = np.array([self._load_frame(frames[i]) for i in idx_y])
+        frame_fgbg = np.array([self._load_frames(frames_fgbg[i]) for i in idx_y])
         frame_x = []
         for x in zip(*idx_x):
             temp_x= np.array([self._load_frame(frames[i]) for i in x])
             frame_x.append(temp_x)
-        return frame_x, frame_y
+        return frame_x, frame_y, frame_fgbg
 
     def random_batches(self):
         while True:
             for i in range(int(self.batch_size/self.batch_per_video)):
-                x, y = self._random_frames()
+                x, y, fgbg = self._random_frames()
                 if i == 0:
                     batch_x = x
                     batch_y = y
+                    batch_fgbg = fgbg
                 else:
                     batch_x = np.concatenate((batch_x, x), axis=1)
                     batch_y = np.concatenate((batch_y, y), axis=0)
+                    batch_fgbg = np.concatenate((batch_fgbg, fgbg), axis=0)
+
             batch_x = list(batch_x)
-            yield batch_x, batch_y
+            yield batch_x, batch_y, batch_fgbg
