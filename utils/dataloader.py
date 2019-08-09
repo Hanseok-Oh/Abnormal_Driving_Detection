@@ -52,4 +52,5 @@ class DataLoader:
                     batch_fgbg = np.concatenate((batch_fgbg, fgbg), axis=0)
 
             batch_x = list(batch_x)
-            yield batch_x, batch_y, batch_fgbg
+            batch_x.append(batch_fgbg)
+            yield batch_x, batch_y
