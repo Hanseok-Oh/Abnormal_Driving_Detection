@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from PIL import Image
 
-class DataLoader:
+class Dataset:
     def __init__(self, directory, offset_x=[1,5,9], offset_y=50, batch_size=32, batch_per_video=4):
         self.directory = directory
         self.videos = [os.path.join(self.directory, i) for i in os.listdir(directory)]
@@ -39,7 +39,7 @@ class DataLoader:
             frame_x.append(temp_x)
         return frame_x, frame_y, frame_fgbg
 
-    def random_batches(self):
+    def trainloader(self):
         while True:
             for i in range(int(self.batch_size/self.batch_per_video)):
                 x, y, fgbg = self._random_frames()
@@ -56,3 +56,6 @@ class DataLoader:
             batch_x = list(batch_x)
             batch_x.append(batch_fgbg)
             yield batch_x, batch_y
+
+    def testloader(self):
+        return

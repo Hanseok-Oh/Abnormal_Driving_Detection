@@ -1,7 +1,16 @@
 import keras
+import keras.backend as K
 import tensorflow as tf
 import scipy.stats as sp
-from .dataloader import *
+
+from .data import *
+from .models import *
+
+
+def custom_loss(weights):
+    def loss(y_true,y_pred):
+        return K.mean(K.square(y_pred - y_true) * weights)
+    return loss
 
 
 def save_model(model, save_path):
