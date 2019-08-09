@@ -24,8 +24,9 @@ class DataLoader:
     def _random_frames(self):
         video_idx = np.random.randint(low=0, high=len(self.videos))
         video = self.videos[video_idx]
-        frames = [os.path.join(video, '{}.png'.format(i)) for i in range(len(os.listdir(video)) / 2)]
-        frames_fgbg = [os.path.join(video, '{}_fgbg.png'.format(i)) for i in range(len(os.listdir(video)) / 2)]
+        video_len = int(len(os.listdir(video)) / 2)
+        frames = [os.path.join(video, '{}.png'.format(i)) for i in range(video_len)]
+        frames_fgbg = [os.path.join(video, '{}_fgbg.png'.format(i)) for i in range(video_len)]
 
         idx_y = np.random.randint(self.offset_y, len(frames), self.batch_per_video)
         idx_x = [[y - self.offset_y + x for x in self.offset_x] for y in idx_y]
