@@ -34,7 +34,7 @@ class DataLoader:
         frame_y = np.array([self._load_frame(frames[i]) for i in idx_y])
         frame_fgbg = np.array([self._load_frame(frames_fgbg[i]) for i in idx_y])
         frame_x = []
-        for x in zip(*idx_x):
+        for x in idx_x:
             temp_x= np.array([self._load_frame(frames[i]) for i in x])
             frame_x.append(temp_x)
         return frame_x, frame_y, frame_fgbg
