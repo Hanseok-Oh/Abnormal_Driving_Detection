@@ -49,7 +49,7 @@ class DataLoader:
                     batch_y = y
                     batch_fgbg = fgbg
                 else:
-                    batch_x = np.concatenate((batch_x, x), axis=1)
+                    #batch_x = np.concatenate((batch_x, x), axis=1)
                     batch_y = np.concatenate((batch_y, y), axis=0)
                     batch_fgbg = np.concatenate((batch_fgbg, fgbg), axis=0)
 
