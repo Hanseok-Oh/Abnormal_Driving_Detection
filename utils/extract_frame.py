@@ -1,18 +1,20 @@
 import os
 import cv2
-import tkinter
+import argparse
 import numpy as np
 from tqdm import tqdm
 from PIL import Image
-from tkinter.filedialog import askdirectory
+
+# argparse
+parser = argparse.ArgumentParser()
+parser.add_argument('--load_path', help='load_path', type=str)
+parser.add_argument('--save_path', help='save_path', type=str)
+args = parser.parse_args()
 
 
 def get_path():
-    root=tkinter.Tk()
-    root.withdraw()
-    load_path = askdirectory(title='load path')
-    save_path = askdirectory(title='save path')
-    root.destroy()
+    load_path = args.load_path
+    save_path = args.save_path
     return load_path, save_path
 
 def get_video_list(load_path):
