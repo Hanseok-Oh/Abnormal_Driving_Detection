@@ -21,10 +21,6 @@ class DataLoader:
         arr /= 255
         return arr
 
-    def _load_fgbg(self, frame_path):
-        frame_path = frame_path.replace('.', '_fgbg.')
-        frame = Image.open(frame_path)
-
     def _random_frames(self):
         video_idx = np.random.randint(low=0, high=len(self.videos))
         video = self.videos[video_idx]
@@ -35,7 +31,7 @@ class DataLoader:
         idx_x = [[y - self.offset_y + x for x in self.offset_x] for y in idx_y]
 
         frame_y = np.array([self._load_frame(frames[i]) for i in idx_y])
-        frame_fgbg = np.array([self._load_frames(frames_fgbg[i]) for i in idx_y])
+        frame_fgbg = np.array([self._load_frame(frames_fgbg[i]) for i in idx_y])
         frame_x = []
         for x in zip(*idx_x):
             temp_x= np.array([self._load_frame(frames[i]) for i in x])
