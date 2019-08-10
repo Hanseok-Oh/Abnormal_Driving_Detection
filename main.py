@@ -32,7 +32,7 @@ def test():
 
 def main(args):
     if args.train == 'train':
-        dataset = Dataset(directory)
+        dataset = Dataset(args.directory)
         dataloader = dataset.trainloader()
         optimizer = keras.optimizers.Adam(lr=1e-3, decay=1e-4)
         model = ConvLSTM(optimizer=optimizer)
