@@ -5,7 +5,7 @@ import pandas as pd
 from PIL import Image
 
 class Dataset:
-    def __init__(self, directory, offset_x=[1,5,9], offset_y=50, batch_size=32, batch_per_video=4):
+    def __init__(self, directory, offset_x, offset_y, batch_size, batch_per_video):
         self.directory = directory
         self.videos = [os.path.join(self.directory, i) for i in os.listdir(directory)]
         self.batch_size = batch_size
