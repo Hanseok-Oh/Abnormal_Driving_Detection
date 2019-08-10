@@ -39,7 +39,7 @@ class Dataset:
             frame_x.append(temp_x)
         return frame_x, frame_y, frame_fgbg
 
-    def trainloader(self):
+    def train_loader(self):
         while True:
             for i in range(int(self.batch_size/self.batch_per_video)):
                 x, y, fgbg = self._random_frames()
@@ -57,5 +57,5 @@ class Dataset:
             batch_x.append(batch_fgbg)
             yield batch_x, batch_y
 
-    def testloader(self):
+    def test_loader(self):
         return
