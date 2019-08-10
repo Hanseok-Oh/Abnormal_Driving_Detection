@@ -9,10 +9,13 @@ def ConvLSTM(optimizer):
     input_3 = L.Input(shape=input_shape)
     weights_input = L.Input(shape=input_shape)
 
-    encoder = Sequential()
-    encoder.add(L.Conv2D(32, (2,2), strides=(2,2), activation='relu', input_shape=input_shape))
-    encoder.add(L.Conv2D(64, (2,2), strides=(2,2), activation='relu'))
-    encoder.add(L.Conv2D(64, (2,2), strides=(2,2), activation='relu'))
+    encoder = Sequential(name='encoder')
+    encoder.add(L.Conv2D(16, (3,3), strides=2, activation='relu', padding='same', input_shape=input_shape))
+    encoder.add(L.Conv2D(16, (3,3), strides=1, activation='relu', padding='same'))
+    encoder.add(L.Conv2D(32, (3,3), strides=2, activation='relu', padding='same'))
+    encoder.add(L.Conv2D(32, (3,3), strides=1, activation='relu', padding='same'))
+    encoder.add(L.Conv2D(64, (3,3), strides=2, activation='relu', padding='same'))
+    encoder.add(L.Conv2D(64, (3,3), strides=1, activation='relu', padding='same'))
 
     encoded_1 = encoder(input_1)
     encoded_2 = encoder(input_2)
@@ -24,12 +27,20 @@ def ConvLSTM(optimizer):
     reshaped_3 = L.Reshape(reshape)(encoded_3)
 
     concat = L.Concatenate(axis=1)([reshaped_1, reshaped_2, reshaped_3])
-    convlstm = L.ConvLSTM2D(32, (3,3), strides=1, padding='same', activation='relu', return_sequences=True)(concat)
-    convlstm = L.ConvLSTM2D(32, (3,3), strides=1, padding='same', activation='relu', return_sequences=False)(convlstm)
+    convlstm = L.ConvLSTM2D(64, (3,3), strides=1, padding='same', activation='relu', return_sequences=True)(concat)
+    convlstm = L.ConvLSTM2D(64, (3,3), strides=1, padding='same', activation='relu', return_sequences=False)(convlstm)
 
-    deconv = L.Conv2DTranspose(64, (2,2), strides=2, padding='same', activation='relu')(convlstm)
-    deconv = L.Conv2DTranspose(32, (2,2), strides=2, padding='same', activation='relu')(deconv)
-    output = L.Conv2DTranspose(1, (2,2), strides=2, padding='same', activation='sigmoid')(deconv)
+    decoder_shape = (i.value for i in convlstm.get_shape()[1:])
+    decoder = Sequential(name='decoder')
+    decoder.add(L.Conv2DTranspose(64, (3,3), strides=2, activation='relu', padding='same', input_shape=decoder_shape))
+    decoder.add(L.Conv2D(64, (3,3), strides=1, activation='relu', padding='same'))
+    decoder.add(L.Conv2DTranspose(32, (3,3), strides=2, activation='relu', padding='same'))
+    decoder.add(L.Conv2D(32, (3,3), strides=1, activation='relu', padding='same'))
+    decoder.add(L.Conv2DTranspose(16, (3,3), strides=2, activation='relu', padding='same'))
+    decoder.add(L.Conv2D(16, (3,3), strides=1, activation='relu', padding='same'))
+    decoder.add(L.Conv2D(1, (3,3), strides=1, activation='sigmoid', padding='same'))
+
+    output = decoder(convlstm)
 
     model = Model(inputs=[input_1, input_2, input_3, weights_input], outputs=output)
     model.compile(optimizer=optimizer, loss = utils.custom_loss(weights_input))
