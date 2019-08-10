@@ -37,7 +37,7 @@ def main(args):
         optimizer = keras.optimizers.Adam(lr=1e-3, decay=1e-4)
         model = ConvLSTM(optimizer=optimizer)
         train(dataloader, model, args.epochs, args.steps_per_epoch)
-        utils.save_model(model, save_path)
+        utils.save_model(model, args.save_path)
 
     else:
         dataset = Dataset(directory)
