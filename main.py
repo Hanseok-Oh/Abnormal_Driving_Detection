@@ -1,4 +1,5 @@
 import argparse
+import pandas as pd
 import matplotlib.pyplot as plt
 
 import keras
@@ -15,7 +16,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--train', type=str, default='train')
 parser.add_argument('--directory', type=str)
 parser.add_argument('--save_path', type=str)
-parser.add_argument('--epochs', type=int, default=30)
+parser.add_argument('--epochs', type=int, default=10)
 parser.add_argument('--steps_per_epoch', type=int, default=1000)
 parser.add_argument('--batch_size', type=int, default=32)
 parser.add_argument('--batch_per_video', type=int, default=4)
