@@ -25,16 +25,15 @@ parser.add_argument('--offset_y', type=int, default=30)
 args = parser.parse_args()
 
 
-def train(dataloader, model, epochs, steps_per_epoch):
-    hist = model.fit_generator(
+def train(dataloader, model, epochs, steps_per_epoch, save_path):
+    history = model.fit_generator(
         generator=dataloader,
         epochs = epochs,
         steps_per_epoch= steps_per_epoch
     )
+    hist_df = pd.DataFrame(history.history)
+    hist_df.to_csv('{}.csv'.format(save_path))
 
-    plt.plot(hist.history['loss'])
-    plt.title('MSE')
-    return
 
 def test():
     return
@@ -46,7 +45,7 @@ def main(args):
         dataloader = dataset.train_loader()
         optimizer = keras.optimizers.Adam(lr=1e-3, decay=1e-4)
         model = ConvLSTM(optimizer=optimizer)
-        train(dataloader, model, args.epochs, args.steps_per_epoch)
+        train(dataloader, model, args.epochs, args.steps_per_epoch, args.save_path)
         utils.save_model(model, args.save_path)
 
     else:
