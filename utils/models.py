@@ -3,22 +3,22 @@ import keras.layers as L
 import utils
 
 def ConvLSTM(optimizer):
+    init_channel = 32
+    block_num = 5
+
     input_shape = (256, 256, 1)
     input_1 = L.Input(shape=input_shape)
     input_2 = L.Input(shape=input_shape)
     input_3 = L.Input(shape=input_shape)
     weights_input = L.Input(shape=input_shape)
 
-    init_channel = 32
     encoder = Sequential(name='encoder')
-    encoder.add(L.Conv2D(init_channel, (3,3), strides=2, activation='relu', padding='same', kernel_initializer='he_normal', input_shape=input_shape))
-    encoder.add(L.Conv2D(init_channel, (3,3), strides=1, activation='relu', padding='same', kernel_initializer='he_normal'))
-    encoder.add(L.Conv2D(init_channel*2, (3,3), strides=2, activation='relu', padding='same', kernel_initializer='he_normal'))
-    encoder.add(L.Conv2D(init_channel*2, (3,3), strides=1, activation='relu', padding='same', kernel_initializer='he_normal'))
-    encoder.add(L.Conv2D(init_channel*4, (3,3), strides=2, activation='relu', padding='same', kernel_initializer='he_normal'))
-    encoder.add(L.Conv2D(init_channel*4, (3,3), strides=1, activation='relu', padding='same', kernel_initializer='he_normal'))
-    encoder.add(L.Conv2D(init_channel*8, (3,3), strides=2, activation='relu', padding='same', kernel_initializer='he_normal'))
-    encoder.add(L.Conv2D(init_channel*8, (3,3), strides=1, activation='relu', padding='same', kernel_initializer='he_normal'))
+    for i in range(block_num):
+        if i == 0:
+            encoder.add(L.Conv2D(init_channel*(i+1), (3,3), strides=2, activation='relu', padding='same', kernel_initializer='he_normal', input_shape=input_shape))
+        else:
+            encoder.add(L.Conv2D(init_channel*(i+1), (3,3), strides=2, activation='relu', padding='same', kernel_initializer='he_normal'))
+        encoder.add(L.Conv2D(init_channel*(i+1), (3,3), strides=1, activation='relu', padding='same', kernel_initializer='he_normal'))
 
     encoded_1 = encoder(input_1)
     encoded_2 = encoder(input_2)
@@ -35,16 +35,14 @@ def ConvLSTM(optimizer):
 
     decoder_shape = (i.value for i in convlstm.get_shape()[1:])
     decoder = Sequential(name='decoder')
-    decoder.add(L.Conv2DTranspose(init_channel*8, (3,3), strides=2, activation='relu', padding='same', kernel_initializer='he_normal', input_shape=decoder_shape))
-    decoder.add(L.Conv2D(init_channel*8, (3,3), strides=1, activation='relu', padding='same', kernel_initializer='he_normal'))
-    decoder.add(L.Conv2DTranspose(init_channel*4, (3,3), strides=2, activation='relu', padding='same', kernel_initializer='he_normal'))
-    decoder.add(L.Conv2D(init_channel*4, (3,3), strides=1, activation='relu', padding='same', kernel_initializer='he_normal'))
-    decoder.add(L.Conv2DTranspose(init_channel*2, (3,3), strides=2, activation='relu', padding='same', kernel_initializer='he_normal'))
-    decoder.add(L.Conv2D(init_channel*2, (3,3), strides=1, activation='relu', padding='same', kernel_initializer='he_normal'))
-    decoder.add(L.Conv2DTranspose(init_channel, (3,3), strides=2, activation='relu', padding='same', kernel_initializer='he_normal'))
-    decoder.add(L.Conv2D(init_channel, (3,3), strides=1, activation='relu', padding='same', kernel_initializer='he_normal'))
-    decoder.add(L.Conv2D(1, (3,3), strides=1, activation='sigmoid', padding='same', kernel_initializer='he_normal'))
 
+    for i in range(block_num):
+        if i == 0:
+            decoder.add(L.Conv2DTranspose(init_channel*(block_num-5), (3,3), strides=2, activation='relu', padding='same', kernel_initializer='he_normal', input_shape=decoder_shape))
+        else:
+            decoder.add(L.Conv2DTranspose(init_channel*(block_num-5), (3,3), strides=2, activation='relu', padding='same', kernel_initializer='he_normal'))
+        decoder.add(L.Conv2D(init_channel*8, (3,3), strides=1, activation='relu', padding='same', kernel_initializer='he_normal'))
+    decoder.add(L.Conv2D(1, (3,3), strides=1, activation='sigmoid', padding='same', kernel_initializer='he_normal'))
     output = decoder(convlstm)
 
     model = Model(inputs=[input_1, input_2, input_3, weights_input], outputs=output)
