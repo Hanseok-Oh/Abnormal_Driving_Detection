@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import keras
 import keras.layers as L
 import keras.backend as K
-
+from keras.callbacks import ModelCheckpoint
 
 import utils
 from utils.models import ConvLSTM
@@ -30,10 +30,14 @@ args = parser.parse_args()
 
 
 def train(dataloader, model, epochs, steps_per_epoch, save_path):
+    checkpoint = ModelCheckpoint('{}.h5'.format(save_path), monitor='loss', verbose=1, save_best_only=True, mode='min')
+    callbacks_list = [checkpoint]
+
     history = model.fit_generator(
         generator=dataloader,
         epochs = epochs,
-        steps_per_epoch= steps_per_epoch
+        steps_per_epoch= steps_per_epoch,
+        callbacks=callbacks_list
     )
     hist_df = pd.DataFrame(history.history)
     hist_df.to_csv('{}.csv'.format(save_path))
@@ -50,7 +54,6 @@ def main(args):
         optimizer = keras.optimizers.Adam(lr=1e-3, decay=1e-4)
         model = ConvLSTM(optimizer, args.init_channel, args.block_num, args.drop_rate)
         train(dataloader, model, args.epochs, args.steps_per_epoch, args.save_path)
-        utils.save_model(model, args.save_path)
 
     else:
         dataloader = dataset.test_loader()
