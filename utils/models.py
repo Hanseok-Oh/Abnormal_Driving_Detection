@@ -5,6 +5,7 @@ import utils
 def ConvLSTM(optimizer):
     init_channel = 32
     block_num = 5
+    drop_rate = 0.8
 
     input_shape = (256, 256, 1)
     input_1 = L.Input(shape=input_shape)
@@ -19,6 +20,7 @@ def ConvLSTM(optimizer):
         else:
             encoder.add(L.Conv2D(init_channel*(i+1), (3,3), strides=2, activation='relu', padding='same', kernel_initializer='he_normal'))
         encoder.add(L.Conv2D(init_channel*(i+1), (3,3), strides=1, activation='relu', padding='same', kernel_initializer='he_normal'))
+        encoder.add(L.Dropout(drop_rate))
 
     encoded_1 = encoder(input_1)
     encoded_2 = encoder(input_2)
@@ -42,7 +44,9 @@ def ConvLSTM(optimizer):
         else:
             decoder.add(L.Conv2DTranspose(init_channel*(block_num-5), (3,3), strides=2, activation='relu', padding='same', kernel_initializer='he_normal'))
         decoder.add(L.Conv2D(init_channel*8, (3,3), strides=1, activation='relu', padding='same', kernel_initializer='he_normal'))
+        decoder.add(L.Dropout(drop_rate))
     decoder.add(L.Conv2D(1, (3,3), strides=1, activation='sigmoid', padding='same', kernel_initializer='he_normal'))
+
     output = decoder(convlstm)
 
     model = Model(inputs=[input_1, input_2, input_3, weights_input], outputs=output)
