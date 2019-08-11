@@ -2,12 +2,8 @@ from keras.models import Model, Sequential
 import keras.layers as L
 import utils
 
-def ConvLSTM(optimizer):
+def ConvLSTM(optimizer, init_channel, block_num, drop_rate):
     input_shape = (256, 256, 1)
-    init_channel = 16
-    block_num = 3
-    drop_rate = 0.2
-
     input_1 = L.Input(shape=input_shape)
     input_2 = L.Input(shape=input_shape)
     input_3 = L.Input(shape=input_shape)
