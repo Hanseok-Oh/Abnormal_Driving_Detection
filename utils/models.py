@@ -5,7 +5,7 @@ import utils
 def ConvLSTM(optimizer):
     init_channel = 32
     block_num = 5
-    drop_rate = 0.8
+    drop_rate = 0.2
 
     input_shape = (256, 256, 1)
     input_1 = L.Input(shape=input_shape)
