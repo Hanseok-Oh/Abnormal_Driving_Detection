@@ -5,7 +5,7 @@ import utils
 def ConvLSTM(optimizer):
     input_shape = (256, 256, 1)
     init_channel = 32
-    block_num = 5
+    block_num = 3
     drop_rate = 0.2
 
     input_1 = L.Input(shape=input_shape)
@@ -16,10 +16,10 @@ def ConvLSTM(optimizer):
     encoder = Sequential(name='encoder')
     for i in range(block_num):
         if i == 0:
-            encoder.add(L.Conv2D(init_channel*(i+1), (3,3), strides=2, activation='relu', padding='same', kernel_initializer='he_normal', input_shape=input_shape))
+            encoder.add(L.Conv2D(init_channel*(2**i), (3,3), strides=2, activation='relu', padding='same', kernel_initializer='he_normal', input_shape=input_shape))
         else:
-            encoder.add(L.Conv2D(init_channel*(i+1), (3,3), strides=2, activation='relu', padding='same', kernel_initializer='he_normal'))
-        encoder.add(L.Conv2D(init_channel*(i+1), (3,3), strides=1, activation='relu', padding='same', kernel_initializer='he_normal'))
+            encoder.add(L.Conv2D(init_channel*(2**i), (3,3), strides=2, activation='relu', padding='same', kernel_initializer='he_normal'))
+        encoder.add(L.Conv2D(init_channel*(2**i), (3,3), strides=1, activation='relu', padding='same', kernel_initializer='he_normal'))
         encoder.add(L.Dropout(rate=drop_rate))
 
     encoded_1 = encoder(input_1)
@@ -40,10 +40,10 @@ def ConvLSTM(optimizer):
 
     for i in range(block_num):
         if i == 0:
-            decoder.add(L.Conv2DTranspose(init_channel*(block_num-i), (3,3), strides=2, activation='relu', padding='same', kernel_initializer='he_normal', input_shape=decoder_shape))
+            decoder.add(L.Conv2DTranspose(init_channel*(2**(block_num-i)), (3,3), strides=2, activation='relu', padding='same', kernel_initializer='he_normal', input_shape=decoder_shape))
         else:
-            decoder.add(L.Conv2DTranspose(init_channel*(block_num-i), (3,3), strides=2, activation='relu', padding='same', kernel_initializer='he_normal'))
-        decoder.add(L.Conv2D(init_channel*(block_num-i), (3,3), strides=1, activation='relu', padding='same', kernel_initializer='he_normal'))
+            decoder.add(L.Conv2DTranspose(init_channel*(2**(block_num-i)), (3,3), strides=2, activation='relu', padding='same', kernel_initializer='he_normal'))
+        decoder.add(L.Conv2D(init_channel*(2**(block_num-i)), (3,3), strides=1, activation='relu', padding='same', kernel_initializer='he_normal'))
         decoder.add(L.Dropout(rate=drop_rate))
     decoder.add(L.Conv2D(1, (3,3), strides=1, activation='sigmoid', padding='same', kernel_initializer='he_normal'))
 
