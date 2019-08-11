@@ -17,6 +17,8 @@ def ConvLSTM(optimizer):
     encoder.add(L.Conv2D(init_channel*2, (3,3), strides=1, activation='relu', padding='same', kernel_initializer='he_normal'))
     encoder.add(L.Conv2D(init_channel*4, (3,3), strides=2, activation='relu', padding='same', kernel_initializer='he_normal'))
     encoder.add(L.Conv2D(init_channel*4, (3,3), strides=1, activation='relu', padding='same', kernel_initializer='he_normal'))
+    encoder.add(L.Conv2D(init_channel*8, (3,3), strides=2, activation='relu', padding='same', kernel_initializer='he_normal'))
+    encoder.add(L.Conv2D(init_channel*8, (3,3), strides=1, activation='relu', padding='same', kernel_initializer='he_normal'))
 
     encoded_1 = encoder(input_1)
     encoded_2 = encoder(input_2)
@@ -33,7 +35,9 @@ def ConvLSTM(optimizer):
 
     decoder_shape = (i.value for i in convlstm.get_shape()[1:])
     decoder = Sequential(name='decoder')
-    decoder.add(L.Conv2DTranspose(init_channel*4, (3,3), strides=2, activation='relu', padding='same', kernel_initializer='he_normal', input_shape=decoder_shape))
+    decoder.add(L.Conv2DTranspose(init_channel*8, (3,3), strides=2, activation='relu', padding='same', kernel_initializer='he_normal', input_shape=decoder_shape))
+    decoder.add(L.Conv2D(init_channel*8, (3,3), strides=1, activation='relu', padding='same', kernel_initializer='he_normal'))
+    decoder.add(L.Conv2DTranspose(init_channel*4, (3,3), strides=2, activation='relu', padding='same', kernel_initializer='he_normal'))
     decoder.add(L.Conv2D(init_channel*4, (3,3), strides=1, activation='relu', padding='same', kernel_initializer='he_normal'))
     decoder.add(L.Conv2DTranspose(init_channel*2, (3,3), strides=2, activation='relu', padding='same', kernel_initializer='he_normal'))
     decoder.add(L.Conv2D(init_channel*2, (3,3), strides=1, activation='relu', padding='same', kernel_initializer='he_normal'))
