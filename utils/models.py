@@ -27,8 +27,7 @@ def ConvLSTM(optimizer, init_channel, block_num):
     reshaped_3 = L.Reshape(reshape)(encoded_3)
 
     concat = L.Concatenate(axis=1)([reshaped_1, reshaped_2, reshaped_3])
-    convlstm = L.ConvLSTM2D(init_channel*2, (3,3), strides=1, padding='same', activation='relu', kernel_initializer='he_normal', return_sequences=True)(concat)
-    convlstm = L.ConvLSTM2D(init_channel*2, (3,3), strides=1, padding='same', activation='relu', kernel_initializer='he_normal', return_sequences=False)(convlstm)
+    convlstm = L.ConvLSTM2D(init_channel*4, (3,3), strides=1, padding='same', activation='relu', kernel_initializer='he_normal', return_sequences=False)(concat)
 
     decoder_shape = (i.value for i in convlstm.get_shape()[1:])
     decoder = Sequential(name='decoder')
