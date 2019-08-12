@@ -72,4 +72,7 @@ class Dataset:
         for x in zip(*idx_x):
             temp_x= np.array([self._load_frame(frames[i]) for i in x])
             frame_x.append(temp_x)
+
+        fgbg = np.ones_like(temp_x)
+        frame_x.append(fgbg)
         return frame_x, frame_y
