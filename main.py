@@ -52,7 +52,7 @@ def main(args):
 
     else:
         x, y = dataset.test_loader(0)
-        model = utils.load_model(save_path)
+        model = utils.load_model(args.save_path)
         pred = model.predict(x)
         utils.make_video('predict', pred)
 
