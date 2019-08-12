@@ -22,10 +22,10 @@ parser.add_argument('--offset_y', type=int, default=30)
 
 parser.add_argument('--epochs', type=int, default=100)
 parser.add_argument('--steps_per_epoch', type=int, default=100)
-parser.add_argument('--batch_size', type=int, default=32)
+parser.add_argument('--batch_size', type=int, default=4)
 parser.add_argument('--batch_per_video', type=int, default=1)
 
-parser.add_argument('--init_channel', type=int, default=64)
+parser.add_argument('--init_channel', type=int, default=128)
 parser.add_argument('--block_num', type=int, default=2)
 args = parser.parse_args()
 
