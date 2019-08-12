@@ -46,5 +46,5 @@ def make_image(pred, real):
     ax2 = fig.add_subplot(2, 1, 2)
 
     ax1.imshow(pred[0][:,:,0])
-    ax1.imshow(real[0][:,:,0])
+    ax2.imshow(real[0][:,:,0])
     plt.savefig('train.png')
