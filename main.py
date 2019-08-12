@@ -43,6 +43,16 @@ def train(dataloader, model, epochs, steps_per_epoch, save_path):
     hist_df = pd.DataFrame(history.history)
     hist_df.to_csv('{}.csv'.format(save_path), index=False)
 
+def test(model, x, y, batch_size):
+    for i in range(int(len(y) / batch_size)):
+        batch_x = [j[i:i+batch_size] for j in x]
+        batch_y = y[i:i+batch_size]
+        pred = model.predict(batch_x)
+        if i == 0:
+            result = pred
+        else:
+            result = np.stack((result, pred), axis=0)
+    return result
 
 def main(args):
     dataset = Dataset(args.data_path, args.offset_x, args.offset_y, args.batch_size, args.batch_per_video)
@@ -62,8 +72,8 @@ def main(args):
         video_idx = int(input('예측할 동영상 인덱스를 입력하세요.'))
         x, y = dataset.test_loader(video_idx)
         model = utils.load_model(model, args.save_path)
-        pred = model.predict(x)
-        utils.make_video(pred)
+        result = test(model, x, y, args.batch_size)
+        utils.make_video(result)
 
 if __name__ == '__main__':
     main(args)
