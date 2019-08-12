@@ -39,7 +39,6 @@ def ConvLSTM(optimizer, init_channel, block_num):
         else:
             decoder.add(L.Conv2DTranspose(init_channel*(2**(block_num-i)), (3,3), strides=2, activation='relu', padding='same', kernel_initializer='he_normal'))
         decoder.add(L.Conv2D(init_channel*(2**(block_num-i)), (3,3), strides=1, activation='relu', padding='same', kernel_initializer='he_normal'))
-        decoder.add(L.Dropout(rate=drop_rate))
     decoder.add(L.Conv2D(1, (3,3), strides=1, activation='sigmoid', padding='same', kernel_initializer='he_normal'))
 
     output = decoder(convlstm)
