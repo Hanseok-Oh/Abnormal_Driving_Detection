@@ -1,7 +1,7 @@
 import keras
 import keras.backend as K
 import tensorflow as tf
-import scipy.stats as sp
+import matplotlib.pyplot as plt
 
 from .data import *
 from .models import *
@@ -28,8 +28,8 @@ def load_model(model, load_path):
     return model
 
 
-def make_video(video_name, pred):
-    video = cv2.VideoWriter('{}.avi'.format(video_name), 0, 12, (256, 256), False)
+def make_video(pred):
+    video = cv2.VideoWriter('test.avi', 0, 12, (256, 256), False)
 
     for i in range(len(pred)):
         frame = pred[i][:,:,0] * 255
@@ -39,3 +39,12 @@ def make_video(video_name, pred):
     cv2.destroyAllWindows()
     video.release()
     print('저장 완료')
+
+def make_image(pred, real):
+    fig = plt.figure(figsize=(13, 13))
+    ax1 = fig.add_subplot(2, 1, 1)
+    ax2 = fig.add_subplot(2, 1, 2)
+
+    ax1.imshow(pred[0][:,:,0])
+    ax1.imshow(real[0][:,:,0])
+    fig.savefig('train.png')
