@@ -52,7 +52,7 @@ def test(model, x, y, batch_size):
         if i == 0:
             result = pred
         else:
-            result = np.stack((result, pred), axis=0)
+            result = np.concatenate((result, pred), axis=0)
     return result
 
 def main(args):
