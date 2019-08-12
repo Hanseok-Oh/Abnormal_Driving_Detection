@@ -52,7 +52,8 @@ def main(args):
 
     else:
         x, y = dataset.test_loader(0)
-        model = utils.load_model(args.save_path)
+        model = ConvLSTM(optimizer, args.init_channel, args.block_num)
+        model = utils.load_model(model, args.save_path)
         pred = model.predict(x)
         utils.make_video('predict', pred)
 
