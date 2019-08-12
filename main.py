@@ -22,9 +22,8 @@ parser.add_argument('--batch_size', type=int, default=32)
 parser.add_argument('--batch_per_video', type=int, default=1)
 parser.add_argument('--offset_x', nargs='+', type=int, default=[1, 7, 15])
 parser.add_argument('--offset_y', type=int, default=30)
-parser.add_argument('--init_channel', type=int, default=16)
+parser.add_argument('--init_channel', type=int, default=32)
 parser.add_argument('--block_num', type=int, default=3)
-parser.add_argument('--drop_rate', type=int, default=0)
 args = parser.parse_args()
 
 
@@ -48,7 +47,7 @@ def main(args):
     if args.train == 'train':
         dataloader = dataset.train_loader()
         optimizer = keras.optimizers.Adam(lr=1e-3, decay=1e-4)
-        model = ConvLSTM(optimizer, args.init_channel, args.block_num, args.drop_rate)
+        model = ConvLSTM(optimizer, args.init_channel, args.block_num)
         train(dataloader, model, args.epochs, args.steps_per_epoch, args.save_path)
 
     else:

@@ -2,7 +2,7 @@ from keras.models import Model, Sequential
 import keras.layers as L
 import utils
 
-def ConvLSTM(optimizer, init_channel, block_num, drop_rate):
+def ConvLSTM(optimizer, init_channel, block_num):
     input_shape = (256, 256, 1)
     input_1 = L.Input(shape=input_shape)
     input_2 = L.Input(shape=input_shape)
@@ -16,7 +16,6 @@ def ConvLSTM(optimizer, init_channel, block_num, drop_rate):
         else:
             encoder.add(L.Conv2D(init_channel*(2**i), (3,3), strides=2, activation='relu', padding='same', kernel_initializer='he_normal'))
         encoder.add(L.Conv2D(init_channel*(2**i), (3,3), strides=1, activation='relu', padding='same', kernel_initializer='he_normal'))
-        encoder.add(L.Dropout(rate=drop_rate))
 
     encoded_1 = encoder(input_1)
     encoded_2 = encoder(input_2)

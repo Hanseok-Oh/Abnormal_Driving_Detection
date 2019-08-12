@@ -52,13 +52,12 @@ class Dataset:
                     batch_y = np.concatenate((batch_y, y), axis=0)
                     batch_fgbg = np.concatenate((batch_fgbg, fgbg), axis=0)
 
-            batch_fgbg[batch_fgbg == 1] = 3
+            batch_fgbg[batch_fgbg == 1] = 10
             batch_fgbg[batch_fgbg == 0] = 1
 
             batch_x = list(batch_x)
             batch_x.append(batch_fgbg)
             yield batch_x, batch_y
-
 
     def test_loader(self, video_idx):
         video = self.videos[video_idx]
