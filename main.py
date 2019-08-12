@@ -52,6 +52,7 @@ def main(args):
     if args.train == 'train':
         dataloader = dataset.train_loader()
         train(dataloader, model, args.epochs, args.steps_per_epoch, args.save_path)
+        utils.save_model(model, args.save_path)
         x, y = next(dataloader)
         pred = model.predict(x)
         utils.make_image(pred, y)
