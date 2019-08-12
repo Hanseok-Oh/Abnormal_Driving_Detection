@@ -59,5 +59,18 @@ class Dataset:
             batch_x.append(batch_fgbg)
             yield batch_x, batch_y
 
-    def test_loader(self):
-        return
+
+    def test_loader(self, video_idx):
+        video = self.videos[video_idx]
+        video_len = int(len(os.listdir(video)) / 2)
+        frames = [os.path.join(video, '{}.png'.format(i)) for i in range(video_len)]
+
+        idx_y = np.arange(self.offset_y, len(frames))
+        idx_x = [[y - self.offset_y + x for x in self.offset_x] for y in idx_y]
+
+        frame_y = np.array([self._load_frame(frames[i]) for i in idx_y])
+        frame_x = []
+        for x in zip(*idx_x):
+            temp_x= np.array([self._load_frame(frames[i]) for i in x])
+            frame_x.append(temp_x)
+        return frame_x, frame_y
