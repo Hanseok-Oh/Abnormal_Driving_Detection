@@ -43,16 +43,15 @@ def train(dataloader, model, epochs, steps_per_epoch, save_path):
 
 def main(args):
     dataset = Dataset(args.directory, args.offset_x, args.offset_y, args.batch_size, args.batch_per_video)
+    optimizer = keras.optimizers.Adam(lr=1e-3, decay=1e-4)
+    model = ConvLSTM(optimizer, args.init_channel, args.block_num)
 
     if args.train == 'train':
         dataloader = dataset.train_loader()
-        optimizer = keras.optimizers.Adam(lr=1e-3, decay=1e-4)
-        model = ConvLSTM(optimizer, args.init_channel, args.block_num)
         train(dataloader, model, args.epochs, args.steps_per_epoch, args.save_path)
 
     else:
         x, y = dataset.test_loader(0)
-        model = ConvLSTM(optimizer, args.init_channel, args.block_num)
         model = utils.load_model(model, args.save_path)
         pred = model.predict(x)
         utils.make_video('predict', pred)
