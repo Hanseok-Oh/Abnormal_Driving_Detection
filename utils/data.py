@@ -74,5 +74,5 @@ class Dataset:
             frame_x.append(temp_x)
 
         fgbg = np.ones_like(temp_x)
-        frame_x.append(fgbg)
+        #frame_x.append(fgbg)
         return frame_x, frame_y
