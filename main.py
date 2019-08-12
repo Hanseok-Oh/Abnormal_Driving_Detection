@@ -16,7 +16,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--train', type=str, default='train')
 parser.add_argument('--directory', type=str)
 parser.add_argument('--save_path', type=str)
-parser.add_argument('--epochs', type=int, default=300)
+parser.add_argument('--epochs', type=int, default=100)
 parser.add_argument('--steps_per_epoch', type=int, default=100)
 parser.add_argument('--batch_size', type=int, default=32)
 parser.add_argument('--batch_per_video', type=int, default=1)
@@ -25,7 +25,6 @@ parser.add_argument('--offset_y', type=int, default=30)
 parser.add_argument('--init_channel', type=int, default=16)
 parser.add_argument('--block_num', type=int, default=3)
 parser.add_argument('--drop_rate', type=int, default=0)
-
 args = parser.parse_args()
 
 
@@ -43,9 +42,6 @@ def train(dataloader, model, epochs, steps_per_epoch, save_path):
     hist_df.to_csv('{}.csv'.format(save_path))
 
 
-def test():
-    return
-
 def main(args):
     dataset = Dataset(args.directory, args.offset_x, args.offset_y, args.batch_size, args.batch_per_video)
 
@@ -56,9 +52,10 @@ def main(args):
         train(dataloader, model, args.epochs, args.steps_per_epoch, args.save_path)
 
     else:
-        dataloader = dataset.test_loader()
+        x, y = dataset.test_loader(0)
         model = utils.load_model(save_path)
-        test()
+        pred = model.predict(x)
+        utils.make_video('predict', pred)
 
 if __name__ == '__main__':
     main(args)
