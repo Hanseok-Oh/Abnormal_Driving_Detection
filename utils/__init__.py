@@ -47,4 +47,4 @@ def make_image(pred, real):
 
     ax1.imshow(pred[0][:,:,0])
     ax1.imshow(real[0][:,:,0])
-    fig.savefig('train.png')
+    plt.savefig('train.png')
