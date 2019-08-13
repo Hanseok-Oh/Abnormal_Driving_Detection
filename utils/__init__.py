@@ -41,7 +41,7 @@ def make_video(pred, abnormal):
 
         frame[np.where(ab > 0)] = 0
         frame = np.uint8(frame)
-        ab = ab * 255
+        ab = ab * 100
         ab = np.uint8(ab)
 
         img = cv2.merge((ab, frame, frame))
