@@ -33,7 +33,7 @@ def load_model(model, load_path):
 
 
 def make_video(pred, abnormal):
-    video = cv2.VideoWriter('test.avi', 0, 12, (256, 256), False)
+    video = cv2.VideoWriter('test.avi', cv2.VideoWriter_fourcc('M','J','P','G'), 12, (256, 256), True)
 
     for i in range(len(pred)):
         frame = pred[i][:,:,0] * 255
