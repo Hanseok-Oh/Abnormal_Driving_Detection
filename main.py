@@ -67,7 +67,8 @@ def anomaly_score(pred, real):
     err_pdf = err_dist.pdf(err)
     err_pdf_norm = (err_pdf - err_pdf.min()) / (err_pdf.max() - err_pdf.min())
     abnormal = err_pdf_norm < 0.001
-    return abnormal
+    score = np.mean(abnormal, axis=(1,2))
+    return abnormal, score
 
 def main(args):
     dataset = Dataset(args.data_path, args.offset_x, args.offset_y, args.batch_size, args.batch_per_video)
@@ -88,7 +89,9 @@ def main(args):
         x, y = dataset.test_loader(video_idx)
         model = utils.load_model(model, args.save_path)
         pred = test(model, x, y, args.batch_size)
-        abnormal = anomaly_score(pred, y)
+        abnormal, score = anomaly_score(pred, y)
+        plt.plot(score)
+        plt.savefig('anomaly score.png')
         utils.make_video(pred, abnormal)
 
 if __name__ == '__main__':
