@@ -37,7 +37,7 @@ def make_video(pred, abnormal):
 
     for i in range(len(pred)):
         frame = pred[i][:,:,0] * 255
-        frame[np.where(abnormal[i] < 1)] = 0
+        frame[np.where(abnormal[i][:,:,0] < 1)] = 0
         frame = np.uint8(frame)
         abnormal = abnormal * 255
         abnormal = np.uint8(abnormal)
