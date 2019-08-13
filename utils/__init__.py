@@ -42,7 +42,7 @@ def make_video(pred, abnormal):
         abnormal = abnormal * 255
         abnormal = np.uint8(abnormal)
 
-        img = cv2.merge(abnormal, frame, frame)
+        img = cv2.merge((abnormal, frame, frame))
         video.write(img)
 
     cv2.destroyAllWindows()
