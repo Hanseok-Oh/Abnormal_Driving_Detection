@@ -57,6 +57,7 @@ def test(model, x, y, batch_size):
     return result
 
 def anomaly_score(pred, real):
+    real = real[:len(pred)]
     err = np.abs(pred - real)
     err_mean = err.mean()
     err_std = err.std()
