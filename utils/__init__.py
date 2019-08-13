@@ -37,12 +37,14 @@ def make_video(pred, abnormal):
 
     for i in range(len(pred)):
         frame = pred[i][:,:,0] * 255
-        frame[np.where(abnormal[i][:,:,0] < 1)] = 0
-        frame = np.uint8(frame)
-        abnormal = abnormal * 255
-        abnormal = np.uint8(abnormal)
+        ab = abnormal[i][:,:,0]
 
-        img = cv2.merge((abnormal, frame, frame))
+        frame[np.where(ab < 1)] = 0
+        frame = np.uint8(frame)
+        ab = ab * 255
+        ab = np.uint8(ab)
+
+        img = cv2.merge((ab, frame, frame))
         video.write(img)
 
     cv2.destroyAllWindows()
