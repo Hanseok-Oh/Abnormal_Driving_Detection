@@ -66,7 +66,7 @@ def anomaly_score(pred, real):
     err[err < err_mean] = err_mean
     err_pdf = err_dist.pdf(err)
     err_pdf_norm = (err_pdf - err_pdf.min()) / (err_pdf.max() - err_pdf.min())
-    abnormal = err_pdf_norm < 0.01
+    abnormal = err_pdf_norm < 0.001
     return abnormal
 
 def main(args):
