@@ -88,7 +88,7 @@ def main(args):
         model = utils.load_model(model, args.save_path)
         pred = test(model, x, y, args.batch_size)
         abnormal = anomaly_score(pred, y)
-        utils.make_video(result, abnormal)
+        utils.make_video(pred, abnormal)
 
 if __name__ == '__main__':
     main(args)
