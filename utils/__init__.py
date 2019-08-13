@@ -32,13 +32,18 @@ def load_model(model, load_path):
     return model
 
 
-def make_video(pred):
+def make_video(pred, abnormal):
     video = cv2.VideoWriter('test.avi', 0, 12, (256, 256), False)
 
     for i in range(len(pred)):
         frame = pred[i][:,:,0] * 255
+        frame[abnormal < 1] = 0
         frame = np.uint8(frame)
-        video.write(frame)
+        abnormal = abnormal * 255
+        abnormal = np.uint8(abnormal)
+
+        img = cv2.merge(abnormal, frame, frame)
+        video.write(img)
 
     cv2.destroyAllWindows()
     video.release()

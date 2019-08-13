@@ -1,6 +1,7 @@
 import argparse
 import pandas as pd
 import numpy as np
+import scipy.stats as sp
 import matplotlib.pyplot as plt
 
 import keras
@@ -55,6 +56,18 @@ def test(model, x, y, batch_size):
             result = np.concatenate((result, pred), axis=0)
     return result
 
+def anomaly_score(pred, real):
+    err = np.abs(pred - real)
+    err_mean = err.mean()
+    err_std = err.std()
+    err_dist = sp.norm(err_mean, err_std)
+
+    err[err < err_mean] = err_mean
+    err_pdf = err_dist.pdf(err)
+    err_pdf_norm = (err_pdf - err_pdf.min()) / (err_pdf.max() - err_pdf.min())
+    abnormal = err_pdf_norm < 0.05
+    return abnormal
+
 def main(args):
     dataset = Dataset(args.data_path, args.offset_x, args.offset_y, args.batch_size, args.batch_per_video)
     optimizer = keras.optimizers.Adam(lr=1e-4)
@@ -73,8 +86,9 @@ def main(args):
         video_idx = int(input('예측할 동영상 인덱스를 입력하세요.'))
         x, y = dataset.test_loader(video_idx)
         model = utils.load_model(model, args.save_path)
-        result = test(model, x, y, args.batch_size)
-        utils.make_video(result)
+        pred = test(model, x, y, args.batch_size)
+        abnormal = anomaly_score(pred, y)
+        utils.make_video(result, abnormal)
 
 if __name__ == '__main__':
     main(args)
